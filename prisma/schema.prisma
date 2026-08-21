@@ -1,0 +1,265 @@
+// KLNA Conciergerie — CRM Ticket Resale Platform
+// PostgreSQL via Supabase
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum EventCategory {
+  CONCERT
+  SPORT
+  THEATRE
+  VIP
+  FESTIVAL
+}
+
+enum EventStatus {
+  UPCOMING
+  COMPLETED
+  CANCELLED
+}
+
+enum TicketType {
+  E_TICKET_PDF
+  MOBILE_TRANSFER
+  PHYSICAL
+  QR_CODE
+}
+
+enum TicketStockStatus {
+  IN_STOCK
+  RESERVED
+  SOLD
+}
+
+enum TransferStatus {
+  PENDING_RECEIPT // En attente de réception
+  IN_STOCK        // En stock
+  READY_TO_SEND   // Prêt à envoyer
+  SENT_TO_CLIENT  // Envoyé au client
+}
+
+enum ResalePlatform {
+  STUBHUB
+  VIAGOGO
+  DIRECT_CLIENT
+  WHATSAPP
+  PRIVATE_SALE
+}
+
+enum Currency {
+  EUR
+  USD
+  AED
+}
+
+enum AcquisitionChannel {
+  WHATSAPP
+  INSTAGRAM
+  WORD_OF_MOUTH
+  B2B
+  OTHER
+}
+
+enum ClientType {
+  VIP
+  REGULAR
+  BROKER
+}
+
+enum PaymentStatus {
+  PAID
+  DEPOSIT
+  PENDING
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CARD
+  CASH
+  CRYPTO
+}
+
+enum DeliveryStatus {
+  TO_DELIVER
+  DELIVERED
+  TRANSFER_COMPLETED
+}
+
+enum AttachmentType {
+  E_TICKET_PDF
+  TRANSFER_SCREENSHOT
+  QR_CODE
+  OTHER
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model Event {
+  id        String        @id @default(cuid())
+  name      String
+  category  EventCategory
+  venue     String
+  city      String?
+  dateTime  DateTime
+  imageUrl  String?
+  status    EventStatus   @default(UPCOMING)
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  tickets Ticket[]
+
+  @@index([dateTime])
+  @@index([status])
+  @@index([category])
+}
+
+model Supplier {
+  id             String  @id @default(cuid())
+  name           String
+  alias          String?
+  reliability    Int     @default(3) // 1-5
+  contactChannel String?
+  contactInfo    String?
+  internalNotes  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  ticketBatches TicketBatch[]
+  tickets       Ticket[]
+}
+
+/// Lot d'achat — permet le split de billets (ex: 4 achetés, vendus séparément)
+model TicketBatch {
+  id               String   @id @default(cuid())
+  supplierId       String
+  purchaseDate     DateTime
+  totalQuantity    Int
+  totalPurchasePrice Decimal @db.Decimal(12, 2)
+  totalPurchaseFees  Decimal @db.Decimal(12, 2) @default(0)
+  currency         Currency @default(EUR)
+  sourceName       String?  // Nom fournisseur/source si hors Supplier
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+  tickets  Ticket[]
+
+  @@index([purchaseDate])
+}
+
+model Ticket {
+  id        String @id @default(cuid())
+  eventId   String
+  batchId   String? // null si achat unitaire
+  supplierId String?
+
+  // Placement
+  section   String?
+  category  String? // Catégorie billet (Gold, VIP, etc.)
+  row       String?
+  seats     String? // ex: "12-14"
+
+  ticketType TicketType @default(E_TICKET_PDF)
+
+  // Financials — Achat (prorata si split via batch)
+  quantity           Int      @default(1)
+  purchaseUnitPrice  Decimal  @db.Decimal(12, 2)
+  purchaseFees       Decimal  @db.Decimal(12, 2) @default(0)
+  purchaseCurrency   Currency @default(EUR)
+  purchaseDate       DateTime
+
+  // Financials — Vente
+  stockStatus        TicketStockStatus @default(IN_STOCK)
+  transferStatus     TransferStatus    @default(PENDING_RECEIPT)
+  targetSalePrice    Decimal?          @db.Decimal(12, 2)
+  actualSalePrice    Decimal?          @db.Decimal(12, 2)
+  resaleFees         Decimal           @db.Decimal(12, 2) @default(0)
+  resalePlatform     ResalePlatform?
+  saleCurrency       Currency          @default(EUR)
+
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event      Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  batch      TicketBatch?      @relation(fields: [batchId], references: [id])
+  supplier   Supplier?         @relation(fields: [supplierId], references: [id])
+  attachments TicketAttachment[]
+  transactions Transaction[]
+
+  @@index([eventId])
+  @@index([stockStatus])
+  @@index([transferStatus])
+  @@index([batchId])
+}
+
+model TicketAttachment {
+  id        String         @id @default(cuid())
+  ticketId  String
+  type      AttachmentType
+  fileName  String
+  fileUrl   String
+  mimeType  String?
+  createdAt DateTime       @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model Client {
+  id                 String             @id @default(cuid())
+  firstName          String
+  lastName           String
+  email              String?            @unique
+  phone              String?
+  acquisitionChannel AcquisitionChannel @default(WHATSAPP)
+  clientType         ClientType         @default(REGULAR)
+  creditBalance      Decimal            @db.Decimal(12, 2) @default(0)
+  creditCurrency     Currency           @default(EUR)
+  seatPreferences    String?            // ex: "Rangée 1-5, Catégorie Gold"
+  notes              String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  transactions Transaction[]
+
+  @@index([clientType])
+  @@index([lastName, firstName])
+}
+
+model Transaction {
+  id              String          @id @default(cuid())
+  ticketId        String
+  clientId        String
+  saleDate        DateTime        @default(now())
+  negotiatedPrice Decimal         @db.Decimal(12, 2)
+  currency        Currency        @default(EUR)
+  paymentStatus   PaymentStatus   @default(PENDING)
+  paymentMethod   PaymentMethod?
+  deliveryStatus  DeliveryStatus  @default(TO_DELIVER)
+  resalePlatform  ResalePlatform?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+  client Client @relation(fields: [clientId], references: [id])
+
+  @@index([saleDate])
+  @@index([paymentStatus])
+  @@index([deliveryStatus])
+  @@index([clientId])
+  @@index([ticketId])
+}
