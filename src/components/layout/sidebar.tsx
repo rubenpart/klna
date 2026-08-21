@@ -5,16 +5,12 @@ import { usePathname } from "next/navigation";
 import {
   BarChart3,
   LayoutDashboard,
-  Menu,
   Package,
-  Settings,
   Ticket,
   Users,
-  X,
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 
 export const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -25,20 +21,20 @@ export const navItems = [
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
-export const bottomNavItems = [
+export const mobileNavItems = [
   { href: "/", label: "Accueil", icon: LayoutDashboard },
   { href: "/inventory", label: "Stock", icon: Package },
-  { href: "/sales", label: "Ventes", icon: Zap },
   { href: "/events", label: "Events", icon: Ticket },
-  { href: "__menu__", label: "Menu", icon: Menu },
+  { href: "/clients", label: "Clients", icon: Users },
+  { href: "/sales", label: "Ventes", icon: Zap },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 interface SidebarProps {
   className?: string;
-  onNavigate?: () => void;
 }
 
-export function SidebarNav({ className, onNavigate }: SidebarProps) {
+export function SidebarNav({ className }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -60,7 +56,6 @@ export function SidebarNav({ className, onNavigate }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              onClick={onNavigate}
               className={cn(
                 "flex min-h-[44px] items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-colors",
                 isActive
@@ -74,18 +69,6 @@ export function SidebarNav({ className, onNavigate }: SidebarProps) {
           );
         })}
       </nav>
-
-      <Separator />
-      <div className="p-3">
-        <Link
-          href="/settings"
-          onClick={onNavigate}
-          className="flex min-h-[44px] items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
-        >
-          <Settings className="h-4 w-4" />
-          Paramètres
-        </Link>
-      </div>
     </>
   );
 }
@@ -103,78 +86,28 @@ export function Sidebar({ className }: { className?: string }) {
   );
 }
 
-interface MobileDrawerProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      <button
-        type="button"
-        aria-label="Fermer le menu"
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <aside className="absolute inset-y-0 left-0 flex w-[min(100vw-3rem,18rem)] flex-col border-r border-border/60 bg-background shadow-2xl animate-in slide-in-from-left duration-200">
-        <div className="flex items-center justify-end p-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted"
-            aria-label="Fermer"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <SidebarNav onNavigate={onClose} />
-      </aside>
-    </div>
-  );
-}
-
-interface MobileBottomNavProps {
-  onMenuOpen: () => void;
-}
-
-export function MobileBottomNav({ onMenuOpen }: MobileBottomNavProps) {
+export function MobileTopNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
-      <div className="mx-auto grid max-w-lg grid-cols-5">
-        {bottomNavItems.map((item) => {
-          const isMenu = item.href === "__menu__";
-          const isActive = !isMenu && pathname === item.href;
-
-          if (isMenu) {
-            return (
-              <button
-                key={item.href}
-                type="button"
-                onClick={onMenuOpen}
-                className="flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-[10px] text-muted-foreground"
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </button>
-            );
-          }
+    <nav className="shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md lg:hidden">
+      <div className="flex gap-1 overflow-x-auto px-2 py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {mobileNavItems.map((item) => {
+          const isActive = pathname === item.href;
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-[10px] transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground"
+                "flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-xs transition-colors",
+                isActive
+                  ? "bg-primary/10 font-medium text-primary"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
-              <item.icon className={cn("h-5 w-5", isActive && "text-primary")} />
-              <span className={cn(isActive && "font-medium")}>{item.label}</span>
+              <item.icon className="h-4 w-4 shrink-0" />
+              <span>{item.label}</span>
             </Link>
           );
         })}
