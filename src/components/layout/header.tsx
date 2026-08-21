@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Menu, Plus, Search } from "lucide-react";
+import { Bell, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -8,25 +8,14 @@ import { useCrmStore } from "@/stores/crm-store";
 
 interface HeaderProps {
   urgentCount?: number;
-  onMenuOpen?: () => void;
 }
 
-export function Header({ urgentCount = 0, onMenuOpen }: HeaderProps) {
+export function Header({ urgentCount = 0 }: HeaderProps) {
   const openDialog = useCrmStore((s) => s.openDialog);
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-background/80 px-3 backdrop-blur-sm sm:px-4 lg:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 shrink-0 lg:hidden"
-          onClick={onMenuOpen}
-          aria-label="Ouvrir le menu"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-
         <div className="flex items-center gap-2 lg:hidden">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
             K
