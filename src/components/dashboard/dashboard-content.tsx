@@ -17,8 +17,8 @@ export function DashboardContent() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold tracking-tight">Vue d&apos;ensemble</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-lg font-bold tracking-tight sm:text-xl">Vue d&apos;ensemble</h1>
+        <p className="text-xs text-muted-foreground sm:text-sm">
           Tableau de bord KLNA Conciergerie —{" "}
           {new Date().toLocaleDateString("fr-FR", {
             weekday: "long",

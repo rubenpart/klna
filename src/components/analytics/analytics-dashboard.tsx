@@ -40,13 +40,13 @@ export function AnalyticsDashboard({
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold tracking-tight">Analytics & Reporting</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-lg font-bold tracking-tight sm:text-xl">Analytics & Reporting</h1>
+        <p className="text-xs text-muted-foreground sm:text-sm">
           {transactionCount} ventes analysées · Taux de marge global {marginRate.toFixed(1)}%
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
         <Card className="border-border/60 bg-card/50">
           <CardContent className="p-4">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">CA Total</p>
@@ -83,7 +83,8 @@ export function AnalyticsDashboard({
             <CardTitle className="text-sm font-semibold">Rentabilité par Canal</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={240}>
+            <div className="h-[200px] sm:h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={channelProfitability}
@@ -114,6 +115,7 @@ export function AnalyticsDashboard({
                 />
               </PieChart>
             </ResponsiveContainer>
+            </div>
             <div className="mt-2 flex flex-wrap justify-center gap-3">
               {channelProfitability.map((c, i) => (
                 <span key={c.channel} className="flex items-center gap-1 text-[10px] text-muted-foreground">
@@ -131,11 +133,12 @@ export function AnalyticsDashboard({
           <CardTitle className="text-sm font-semibold">Top Événements — Marge vs CA</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={topEvents} layout="vertical" margin={{ top: 0, right: 20, left: 0, bottom: 0 }}>
+          <div className="h-[240px] sm:h-[280px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={topEvents} layout="vertical" margin={{ top: 0, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
               <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <YAxis type="category" dataKey="name" width={140} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+              <YAxis type="category" dataKey="name" width={72} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
               <Tooltip
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
@@ -153,6 +156,7 @@ export function AnalyticsDashboard({
               <Bar dataKey="margin" fill="hsl(142 76% 46% / 0.8)" radius={[0, 3, 3, 0]} barSize={12} />
             </BarChart>
           </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 

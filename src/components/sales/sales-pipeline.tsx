@@ -38,6 +38,7 @@ import {
   RESALE_PLATFORM_LABELS,
 } from "@/types";
 import { useCrmStore } from "@/stores/crm-store";
+import { PageFilters, PageHeader, TableScroll } from "@/components/layout/page-header";
 
 interface SalesPipelineProps {
   transactions: Transaction[];
@@ -171,35 +172,34 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Pipeline de Vente</h1>
-          <p className="text-sm text-muted-foreground">
-            {transactions.length} transactions · {formatCurrency(totalRevenue, "EUR")} encaissé
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Client, événement..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-52 pl-9" />
-          </div>
-          <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Tous paiements</SelectItem>
-              <SelectItem value="PAID">Payé</SelectItem>
-              <SelectItem value="DEPOSIT">Acompte</SelectItem>
-              <SelectItem value="PENDING">En attente</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button size="sm" className="gap-1.5" onClick={() => openDialog("sale")}>
+      <PageHeader
+        title="Pipeline de Vente"
+        description={`${transactions.length} transactions · ${formatCurrency(totalRevenue, "EUR")} encaissé`}
+        actions={
+          <Button size="sm" className="h-10 gap-1.5" onClick={() => openDialog("sale")}>
             <Plus className="h-4 w-4" />
             Nouvelle vente
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <PageFilters>
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Client, événement..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 w-full pl-9" />
+        </div>
+        <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+          <SelectTrigger className="h-10 w-full sm:w-36"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Tous paiements</SelectItem>
+            <SelectItem value="PAID">Payé</SelectItem>
+            <SelectItem value="DEPOSIT">Acompte</SelectItem>
+            <SelectItem value="PENDING">En attente</SelectItem>
+          </SelectContent>
+        </Select>
+      </PageFilters>
+
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
         {PIPELINE_COLUMNS.map((col) => {
           const items = transactions.filter((t) => t.deliveryStatus === col.key);
           const Icon = col.icon;
@@ -235,8 +235,38 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
         })}
       </div>
 
-      <Card className="border-border/60 bg-card/50">
+      <div className="space-y-3 lg:hidden">
+        {filtered.map((txn) => (
+          <Card key={txn.id} className="border-border/60 bg-card/50">
+            <CardContent className="space-y-2 p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium">
+                    {txn.client?.firstName} {txn.client?.lastName}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{txn.ticket?.event?.name}</p>
+                </div>
+                <p className="shrink-0 font-mono text-sm font-semibold tabular-nums">
+                  {formatCurrency(txn.negotiatedPrice, txn.currency)}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant={paymentVariant[txn.paymentStatus]} className="text-[10px]">
+                  {PAYMENT_STATUS_LABELS[txn.paymentStatus]}
+                </Badge>
+                <Badge variant={deliveryVariant[txn.deliveryStatus]} className="text-[10px]">
+                  {DELIVERY_STATUS_LABELS[txn.deliveryStatus]}
+                </Badge>
+              </div>
+              <p className="text-[10px] text-muted-foreground">{formatDateTime(txn.saleDate)}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="hidden border-border/60 bg-card/50 lg:block">
         <CardContent className="p-0">
+          <TableScroll>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
@@ -259,6 +289,7 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
               ))}
             </TableBody>
           </Table>
+          </TableScroll>
         </CardContent>
       </Card>
     </div>

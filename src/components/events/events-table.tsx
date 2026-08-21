@@ -34,6 +34,7 @@ import { formatDate, formatDateTime } from "@/lib/utils";
 import type { EventWithStats } from "@/data/seed/hydrate";
 import { EVENT_CATEGORY_LABELS } from "@/types";
 import { useCrmStore } from "@/stores/crm-store";
+import { PageFilters, PageHeader, TableScroll } from "@/components/layout/page-header";
 
 interface EventsTableProps {
   events: EventWithStats[];
@@ -185,44 +186,43 @@ export function EventsTable({ events }: EventsTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Catalogue Événements</h1>
-          <p className="text-sm text-muted-foreground">
-            {events.length} événements · {upcoming} à venir · {totalStock} billets en stock
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Rechercher..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 pl-9" />
-          </div>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-32"><SelectValue placeholder="Catégorie" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Toutes</SelectItem>
-              {Object.entries(EVENT_CATEGORY_LABELS).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-32"><SelectValue placeholder="Statut" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Tous</SelectItem>
-              <SelectItem value="UPCOMING">À venir</SelectItem>
-              <SelectItem value="COMPLETED">Terminé</SelectItem>
-              <SelectItem value="CANCELLED">Annulé</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button size="sm" className="gap-1.5" onClick={() => openDialog("event")}>
+      <PageHeader
+        title="Catalogue Événements"
+        description={`${events.length} événements · ${upcoming} à venir · ${totalStock} billets en stock`}
+        actions={
+          <Button size="sm" className="h-10 gap-1.5" onClick={() => openDialog("event")}>
             <Plus className="h-4 w-4" />
             Événement
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="grid gap-3 sm:grid-cols-4">
+      <PageFilters>
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Rechercher..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 w-full pl-9" />
+        </div>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="h-10 w-full sm:w-32"><SelectValue placeholder="Catégorie" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Toutes</SelectItem>
+            {Object.entries(EVENT_CATEGORY_LABELS).map(([k, v]) => (
+              <SelectItem key={k} value={k}>{v}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="h-10 w-full sm:w-32"><SelectValue placeholder="Statut" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Tous</SelectItem>
+            <SelectItem value="UPCOMING">À venir</SelectItem>
+            <SelectItem value="COMPLETED">Terminé</SelectItem>
+            <SelectItem value="CANCELLED">Annulé</SelectItem>
+          </SelectContent>
+        </Select>
+      </PageFilters>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         {Object.entries(EVENT_CATEGORY_LABELS).map(([key, label]) => {
           const count = events.filter((e) => e.category === key).length;
           return (
@@ -236,8 +236,47 @@ export function EventsTable({ events }: EventsTableProps) {
         })}
       </div>
 
-      <Card className="border-border/60 bg-card/50">
+      <div className="space-y-3 lg:hidden">
+        {filtered.map((event) => (
+          <Card key={event.id} className="border-border/60 bg-card/50">
+            <CardContent className="space-y-2 p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium leading-snug">{event.name}</p>
+                  <p className="text-xs text-muted-foreground">{event.venue}, {event.city}</p>
+                </div>
+                <Badge variant={statusVariant[event.status]} className="shrink-0 text-[10px]">
+                  {statusLabel[event.status]}
+                </Badge>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <Badge variant="outline">{EVENT_CATEGORY_LABELS[event.category]}</Badge>
+                <span className="text-muted-foreground">{formatDateTime(event.dateTime)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs">
+                  <span className="text-emerald-400">{event.inStock}</span> en stock · {event.sold} vendus
+                </span>
+                {event.status === "UPCOMING" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-9"
+                    onClick={() => openDialog("ticket", { eventId: event.id })}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Billet
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="hidden border-border/60 bg-card/50 lg:block">
         <CardContent className="p-0">
+          <TableScroll>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
@@ -266,6 +305,7 @@ export function EventsTable({ events }: EventsTableProps) {
               )}
             </TableBody>
           </Table>
+          </TableScroll>
         </CardContent>
       </Card>
     </div>

@@ -45,8 +45,9 @@ export function TopEventsChart({ data }: TopEventsChartProps) {
         <CardTitle className="text-sm font-semibold">Top Événements Rentables</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+        <div className="h-[220px] sm:h-[240px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 0, right: 0, left: -12, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
             <XAxis
               dataKey="name"
@@ -69,6 +70,7 @@ export function TopEventsChart({ data }: TopEventsChartProps) {
             <Bar dataKey="margin" fill="hsl(142 76% 46% / 0.8)" radius={[3, 3, 0, 0]} name="margin" />
           </BarChart>
         </ResponsiveContainer>
+        </div>
         <div className="mt-2 flex justify-center gap-4 text-[10px] text-muted-foreground">
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-sm bg-blue-500/60" /> Chiffre d&apos;affaires

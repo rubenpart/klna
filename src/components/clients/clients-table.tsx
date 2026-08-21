@@ -32,6 +32,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/currency";
 import type { Client } from "@/types";
 import { useCrmStore } from "@/stores/crm-store";
+import { PageFilters, PageHeader, TableScroll } from "@/components/layout/page-header";
 
 interface ClientsTableProps {
   clients: Client[];
@@ -191,35 +192,34 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Fichier Clients</h1>
-          <p className="text-sm text-muted-foreground">
-            {clients.length} contacts · {vipCount} VIP · LTV total {formatCurrency(totalLTV, "EUR")}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Nom, email, tel..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-52 pl-9" />
-          </div>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Tous types</SelectItem>
-              <SelectItem value="VIP">VIP</SelectItem>
-              <SelectItem value="REGULAR">Régulier</SelectItem>
-              <SelectItem value="BROKER">Broker</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button size="sm" className="gap-1.5" onClick={() => openDialog("client")}>
+      <PageHeader
+        title="Fichier Clients"
+        description={`${clients.length} contacts · ${vipCount} VIP · LTV total ${formatCurrency(totalLTV, "EUR")}`}
+        actions={
+          <Button size="sm" className="h-10 gap-1.5" onClick={() => openDialog("client")}>
             <Plus className="h-4 w-4" />
             Client
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <PageFilters>
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Nom, email, tel..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 w-full pl-9" />
+        </div>
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="h-10 w-full sm:w-32"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Tous types</SelectItem>
+            <SelectItem value="VIP">VIP</SelectItem>
+            <SelectItem value="REGULAR">Régulier</SelectItem>
+            <SelectItem value="BROKER">Broker</SelectItem>
+          </SelectContent>
+        </Select>
+      </PageFilters>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
         <Card className="border-border/60 bg-card/50">
           <CardContent className="p-4">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Clients actifs</p>
@@ -242,8 +242,35 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
         </Card>
       </div>
 
-      <Card className="border-border/60 bg-card/50">
+      <div className="space-y-3 lg:hidden">
+        {filtered.map((client) => (
+          <Card key={client.id} className="border-border/60 bg-card/50">
+            <CardContent className="space-y-2 p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium">
+                    {client.firstName} {client.lastName}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{client.email}</p>
+                </div>
+                <Badge variant={typeVariant[client.clientType]} className="text-[10px]">
+                  {typeLabel[client.clientType]}
+                </Badge>
+              </div>
+              <div className="flex flex-wrap justify-between gap-2 text-xs">
+                <span>LTV {formatCurrency(client.totalSpent ?? 0, "EUR")}</span>
+                <span className="text-emerald-400">
+                  Marge {formatCurrency(client.totalMarginGenerated ?? 0, "EUR")}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="hidden border-border/60 bg-card/50 lg:block">
         <CardContent className="p-0">
+          <TableScroll>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
@@ -266,6 +293,7 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
               ))}
             </TableBody>
           </Table>
+          </TableScroll>
         </CardContent>
       </Card>
     </div>

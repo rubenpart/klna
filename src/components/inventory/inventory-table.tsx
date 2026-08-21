@@ -43,6 +43,7 @@ import {
   TRANSFER_STATUS_LABELS,
 } from "@/types";
 import { useCrmStore } from "@/stores/crm-store";
+import { PageFilters, PageHeader, TableScroll } from "@/components/layout/page-header";
 
 interface InventoryRow extends Ticket {
   marginResult: ReturnType<typeof calculateMargin>;
@@ -278,56 +279,55 @@ export function InventoryTable({ tickets }: InventoryTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Inventaire Billets</h1>
-          <p className="text-sm text-muted-foreground">
-            {summary.count} lignes · Marge moyenne {summary.avgMargin.toFixed(1)}%
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="w-48 pl-9"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-36">
-              <Filter className="mr-1 h-3 w-3" />
-              <SelectValue placeholder="Statut" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Tous statuts</SelectItem>
-              <SelectItem value="IN_STOCK">En stock</SelectItem>
-              <SelectItem value="RESERVED">Réservé</SelectItem>
-              <SelectItem value="SOLD">Vendu</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Toutes cat.</SelectItem>
-              {Object.entries(EVENT_CATEGORY_LABELS).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button size="sm" className="gap-1.5" onClick={() => openDialog("ticket")}>
+      <PageHeader
+        title="Inventaire Billets"
+        description={`${summary.count} lignes · Marge moyenne ${summary.avgMargin.toFixed(1)}%`}
+        actions={
+          <Button size="sm" className="h-10 gap-1.5" onClick={() => openDialog("ticket")}>
             <Plus className="h-4 w-4" />
             Billet
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <PageFilters>
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Rechercher..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="h-10 w-full pl-9"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="h-10 w-full sm:w-36">
+            <Filter className="mr-1 h-3 w-3" />
+            <SelectValue placeholder="Statut" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Tous statuts</SelectItem>
+            <SelectItem value="IN_STOCK">En stock</SelectItem>
+            <SelectItem value="RESERVED">Réservé</SelectItem>
+            <SelectItem value="SOLD">Vendu</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="h-10 w-full sm:w-36">
+            <SelectValue placeholder="Catégorie" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Toutes cat.</SelectItem>
+            {Object.entries(EVENT_CATEGORY_LABELS).map(([key, label]) => (
+              <SelectItem key={key} value={key}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </PageFilters>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
         <Card className="border-border/60 bg-card/50">
           <CardHeader className="pb-1">
             <CardTitle className="text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -366,9 +366,63 @@ export function InventoryTable({ tickets }: InventoryTableProps) {
         </Card>
       </div>
 
-      <Card className="border-border/60 bg-card/50">
+      {/* Mobile cards */}
+      <div className="space-y-3 lg:hidden">
+        {filteredData.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">Aucun billet trouvé.</p>
+        ) : (
+          filteredData.map((row) => (
+            <Card key={row.id} className="border-border/60 bg-card/50">
+              <CardContent className="space-y-3 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{row.eventName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {row.section} · {row.seats} · ×{row.quantity}
+                    </p>
+                  </div>
+                  <MarginIndicator
+                    marginRate={row.marginResult.marginRate}
+                    netMargin={row.marginResult.netMargin}
+                    tier={row.marginResult.tier}
+                    compact
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant={stockVariant[row.stockStatus]} className="text-[10px]">
+                    {TICKET_STOCK_LABELS[row.stockStatus]}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px]">
+                    {TICKET_TYPE_LABELS[row.ticketType]}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">
+                    Achat {formatCurrency(row.purchaseUnitPrice, row.purchaseCurrency)}
+                  </span>
+                  {(row.stockStatus === "IN_STOCK" || row.stockStatus === "RESERVED") && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-9 gap-1"
+                      onClick={() => openDialog("sale", { ticketId: row.id })}
+                    >
+                      <ShoppingCart className="h-3.5 w-3.5" />
+                      Vendre
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* Desktop table */}
+      <Card className="hidden border-border/60 bg-card/50 lg:block">
         <CardContent className="p-0">
-          <Table>
+          <TableScroll>
+            <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -402,6 +456,7 @@ export function InventoryTable({ tickets }: InventoryTableProps) {
               )}
             </TableBody>
           </Table>
+          </TableScroll>
         </CardContent>
       </Card>
     </div>

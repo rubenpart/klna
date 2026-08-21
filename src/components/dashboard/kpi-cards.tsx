@@ -74,7 +74,7 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid gap-3 grid-cols-2 sm:grid-cols-2 xl:grid-cols-4"
     >
       {cards.map((card) => (
         <motion.div key={card.title} variants={item}>
@@ -86,8 +86,8 @@ export function KpiCards({ kpis }: KpiCardsProps) {
               <card.icon className={`h-4 w-4 ${card.accent}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tabular-nums tracking-tight">{card.value}</div>
-              <div className="mt-1 flex items-center justify-between">
+              <div className="text-lg font-bold tabular-nums tracking-tight sm:text-2xl">{card.value}</div>
+              <div className="mt-1 flex flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs text-muted-foreground">{card.sub}</p>
                 <span
                   className={`inline-flex items-center gap-0.5 text-xs font-medium ${
@@ -116,9 +116,9 @@ export function StockSummaryBar({ kpis }: KpiCardsProps) {
 
   return (
     <Card className="border-border/60 bg-card/50">
-      <CardContent className="flex items-center gap-6 p-4">
-        <Package className="h-5 w-5 text-muted-foreground" />
-        <div className="flex-1">
+      <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6">
+        <Package className="hidden h-5 w-5 shrink-0 text-muted-foreground sm:block" />
+        <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex justify-between text-xs">
             <span className="text-muted-foreground">Rotation du stock</span>
             <span className="font-mono tabular-nums">{formatNumber(soldPct, 0)}% vendu</span>
@@ -130,7 +130,7 @@ export function StockSummaryBar({ kpis }: KpiCardsProps) {
             />
           </div>
         </div>
-        <div className="text-right">
+        <div className="text-left sm:text-right">
           <div className="text-sm font-semibold tabular-nums">
             {formatCurrency(kpis.stockEstimatedValue - kpis.stockInvestment, "EUR")}
           </div>

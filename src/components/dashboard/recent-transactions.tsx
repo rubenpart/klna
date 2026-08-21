@@ -29,7 +29,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
           {transactions.slice(0, 6).map((txn) => (
             <div
               key={txn.id}
-              className="group flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/30"
+              className="group flex items-center gap-2 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/30 sm:gap-3"
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                 {txn.client?.firstName?.[0]}
@@ -49,13 +49,13 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   {txn.resalePlatform && RESALE_PLATFORM_LABELS[txn.resalePlatform]}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="shrink-0 text-right">
                 <p className="text-sm font-semibold tabular-nums">
                   {formatCurrency(txn.negotiatedPrice, txn.currency)}
                 </p>
                 <p className="text-[10px] text-muted-foreground">{formatDateTime(txn.saleDate)}</p>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+              <ArrowRight className="hidden h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
             </div>
           ))}
         </div>

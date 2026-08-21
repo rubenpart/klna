@@ -23,8 +23,9 @@ export function MonthlySalesChart({ data }: MonthlySalesChartProps) {
         <CardTitle className="text-sm font-semibold">Évolution Ventes & Marges</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={240}>
-          <AreaChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+        <div className="h-[200px] sm:h-[240px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 0, right: 4, left: -12, bottom: 0 }}>
             <defs>
               <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="hsl(217 91% 60%)" stopOpacity={0.3} />
@@ -80,6 +81,7 @@ export function MonthlySalesChart({ data }: MonthlySalesChartProps) {
             />
           </AreaChart>
         </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );
