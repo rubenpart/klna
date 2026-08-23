@@ -140,8 +140,8 @@ export function generateBulkSeed(
   const transactions: SeedTransaction[] = [];
   const ticketAttachments: SeedTicketAttachment[] = [];
 
-  let tktIdx = 13;
-  let txnIdx = 9;
+  let tktIdx = 14;
+  let txnIdx = 10;
   let attIdx = 7;
 
   // Génère ~35 tickets supplémentaires répartis sur tous les événements

@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, FileText, MapPin, Package, Search, Truck } from "lucide-react";
+import { ArrowUpDown, ClipboardList, FileText, MapPin, Package, Search, Truck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,11 @@ interface SalesPipelineProps {
   transactions: Transaction[];
 }
 
+const PIPELINE_COLUMNS = [
+  { key: "TO_DELIVER" as const, label: "À livrer", icon: Package, color: "border-red-500/30 bg-red-500/5" },
+  { key: "DELIVERED" as const, label: "Livré", icon: Truck, color: "border-emerald-500/30 bg-emerald-500/5" },
+];
+
 const paymentVariant: Record<string, "success" | "warning" | "secondary"> = {
   PAID: "success",
   DEPOSIT: "warning",
@@ -56,11 +61,6 @@ const deliveryVariant: Record<string, "critical" | "warning" | "success" | "seco
   TO_DELIVER: "critical",
   DELIVERED: "success",
 };
-
-const PIPELINE_COLUMNS = [
-  { key: "TO_DELIVER" as const, label: "À livrer", icon: Package, color: "border-red-500/30 bg-red-500/5" },
-  { key: "DELIVERED" as const, label: "Livré", icon: Truck, color: "border-emerald-500/30 bg-emerald-500/5" },
-];
 
 export function SalesPipeline({ transactions }: SalesPipelineProps) {
   const openDialog = useCrmStore((s) => s.openDialog);
@@ -220,6 +220,21 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
             <span className="text-xs text-muted-foreground">—</span>
           ),
       },
+      {
+        id: "statusDetails",
+        header: "",
+        cell: ({ row }) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5 text-muted-foreground hover:text-foreground [&_svg]:size-2.5"
+            title="Modifier les statuts"
+            onClick={() => openDialog("updateSaleStatus", { transactionId: row.original.id })}
+          >
+            <ClipboardList className="h-2.5 w-2.5" />
+          </Button>
+        ),
+      },
     ],
     [openDialog]
   );
@@ -277,14 +292,17 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
               </CardHeader>
               <CardContent className="max-h-48 space-y-2 overflow-y-auto">
                 {items.slice(0, 5).map((txn) => (
-                  <div key={txn.id} className="rounded-lg border border-border/40 bg-background/50 p-2">
+                  <div key={txn.id} className="rounded-lg border border-border/40 bg-background/50 p-2 space-y-2">
                     <p className="truncate text-xs font-medium">
                       {txn.client?.firstName} {txn.client?.lastName}
                     </p>
                     <p className="truncate text-[10px] text-muted-foreground">{txn.ticket?.event?.name}</p>
-                    <p className="mt-1 font-mono text-xs tabular-nums text-emerald-600">
+                    <p className="font-mono text-xs tabular-nums text-emerald-600">
                       {formatCurrency(txn.negotiatedPrice, txn.currency)}
                     </p>
+                    <Badge variant={deliveryVariant[txn.deliveryStatus]} className="text-[10px]">
+                      {DELIVERY_STATUS_LABELS[txn.deliveryStatus]}
+                    </Badge>
                   </div>
                 ))}
                 {items.length > 5 && (
@@ -311,13 +329,22 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
                   {formatCurrency(txn.negotiatedPrice, txn.currency)}
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <Badge variant={paymentVariant[txn.paymentStatus]} className="text-[10px]">
                   {PAYMENT_STATUS_LABELS[txn.paymentStatus]}
                 </Badge>
                 <Badge variant={deliveryVariant[txn.deliveryStatus]} className="text-[10px]">
                   {DELIVERY_STATUS_LABELS[txn.deliveryStatus]}
                 </Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 shrink-0 text-muted-foreground hover:text-foreground [&_svg]:size-2.5"
+                  title="Modifier les statuts"
+                  onClick={() => openDialog("updateSaleStatus", { transactionId: txn.id })}
+                >
+                  <ClipboardList className="h-2.5 w-2.5" />
+                </Button>
               </div>
               {(txn.businessBringer || txn.seller) && (
                 <p className="text-[10px] text-muted-foreground">
