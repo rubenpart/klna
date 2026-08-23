@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EntityTransactionsList } from "@/components/shared/entity-transactions-list";
+import { getTransactionAmountEur, sumBringerCommissions } from "@/lib/transaction-stats";
 import { formatCurrency } from "@/lib/currency";
-import { sumBringerCommissions } from "@/lib/transaction-stats";
 import { useCrmStore } from "@/stores/crm-store";
 import { PARTNER_STATUS_LABELS } from "@/types";
 
@@ -40,7 +40,7 @@ export function BusinessBringerDetail({ bringerId }: BusinessBringerDetailProps)
 
   const stats = useMemo(() => {
     const referredClients = new Set(paidTransactions.map((t) => t.clientId));
-    const totalRevenue = paidTransactions.reduce((s, t) => s + t.negotiatedPrice, 0);
+    const totalRevenue = paidTransactions.reduce((s, t) => s + getTransactionAmountEur(t), 0);
     const totalCommission = sumBringerCommissions(paidTransactions, bringer);
     return {
       referralCount: paidTransactions.length,

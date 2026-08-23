@@ -14,13 +14,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TableScroll } from "@/components/layout/page-header";
+import { SalePriceDisplay } from "@/components/shared/sale-price-display";
 import { formatCurrency } from "@/lib/currency";
 import { salePlacementLabel } from "@/lib/invoice";
 import {
   computeBringerCommission,
   computeTransactionMargin,
 } from "@/lib/transaction-stats";
-import { formatDateTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import type { BusinessBringer, Transaction } from "@/types";
 import {
   DELIVERY_STATUS_LABELS,
@@ -150,11 +151,9 @@ export function EntityTransactionsList({
                       {txn.ticket?.event?.name ?? "Événement"}
                     </p>
                   )}
-                  <p className="text-[10px] text-muted-foreground">{formatDateTime(txn.saleDate)}</p>
+                  <p className="text-[10px] text-muted-foreground">{formatDate(txn.saleDate)}</p>
                 </div>
-                <p className="shrink-0 font-mono text-sm font-semibold tabular-nums">
-                  {formatCurrency(txn.negotiatedPrice, txn.currency)}
-                </p>
+                <SalePriceDisplay transaction={txn} size="sm" />
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 {salePlacementLabel(txn.ticket, txn)}
@@ -239,7 +238,7 @@ export function EntityTransactionsList({
               <TableBody>
                 {sorted.map((txn) => (
                   <TableRow key={txn.id}>
-                    <TableCell className="text-xs">{formatDateTime(txn.saleDate)}</TableCell>
+                    <TableCell className="text-xs">{formatDate(txn.saleDate)}</TableCell>
                     {showClient && (
                       <TableCell>
                         {txn.client ? (
@@ -285,8 +284,8 @@ export function EntityTransactionsList({
                         {formatCurrency(computeTransactionMargin(txn, txn.ticket), "EUR")}
                       </TableCell>
                     )}
-                    <TableCell className="font-mono text-sm font-semibold tabular-nums">
-                      {formatCurrency(txn.negotiatedPrice, txn.currency)}
+                    <TableCell>
+                      <SalePriceDisplay transaction={txn} />
                     </TableCell>
                     {showPaymentDelivery && (
                       <TableCell>

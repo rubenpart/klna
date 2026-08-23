@@ -17,7 +17,7 @@ export function seedInvoice(params: {
   paymentTerms?: string;
   notes?: string;
 }): Invoice {
-  const vatRate = params.vatRate ?? 20;
+  const vatRate = params.vatRate ?? 0;
   return {
     number: params.number,
     issueDate: params.issueDate,

@@ -22,7 +22,7 @@ export const mockTransactions = hydrated.transactions;
 export const mockEventStats = computeEventStats(mockEvents, mockTickets);
 export const mockKPIs = computeKPIs(mockTickets, mockTransactions);
 export const mockTopEvents = computeTopEvents(mockTickets, mockEvents);
-export const mockMonthlySales = computeMonthlySales(mockTransactions);
+export const mockMonthlySales = computeMonthlySales(mockTransactions, mockTickets);
 export const mockChannelProfitability = computeChannelProfitability(
   mockTransactions,
   mockTickets

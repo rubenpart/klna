@@ -1131,7 +1131,10 @@
       "saleCurrency": "EUR",
       "notes": "Vendu à Karim — transfert en attente",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 280,
+      "purchaseFeesEur": 45
     },
     {
       "id": "klna_tkt_002",
@@ -1157,7 +1160,10 @@
       "saleCurrency": "EUR",
       "notes": "Lot parent — ne pas vendre directement, utiliser les splits",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 195,
+      "purchaseFeesEur": 15
     },
     {
       "id": "klna_tkt_003",
@@ -1183,7 +1189,10 @@
       "saleCurrency": "EUR",
       "notes": "Split 1/2 — vendu à Sophie",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 195,
+      "purchaseFeesEur": 30
     },
     {
       "id": "klna_tkt_004",
@@ -1209,7 +1218,10 @@
       "saleCurrency": "EUR",
       "notes": "Split 2/2 — vendu à Marco",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 195,
+      "purchaseFeesEur": 30
     },
     {
       "id": "klna_tkt_005",
@@ -1235,7 +1247,10 @@
       "saleCurrency": "EUR",
       "notes": "Réservé pour Emma — acompte reçu",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 120,
+      "purchaseFeesEur": 15
     },
     {
       "id": "klna_tkt_006",
@@ -1261,7 +1276,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 700,
+      "purchaseFeesEur": 50
     },
     {
       "id": "klna_tkt_007",
@@ -1287,7 +1305,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 890,
+      "purchaseFeesEur": 75
     },
     {
       "id": "klna_tkt_008",
@@ -1313,7 +1334,10 @@
       "saleCurrency": "EUR",
       "notes": "Transfert mobile à effectuer avant match",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 180,
+      "purchaseFeesEur": 30
     },
     {
       "id": "klna_tkt_009",
@@ -1339,7 +1363,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 95,
+      "purchaseFeesEur": 12
     },
     {
       "id": "klna_tkt_013",
@@ -1366,7 +1393,10 @@
       "saleCurrency": "EUR",
       "notes": "Achat en gros — places à attribuer plus tard",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 180,
+      "purchaseFeesEur": 24
     },
     {
       "id": "klna_tkt_010",
@@ -1392,7 +1422,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 414,
+      "purchaseFeesEur": 73.6
     },
     {
       "id": "klna_tkt_011",
@@ -1418,7 +1451,10 @@
       "saleCurrency": "EUR",
       "notes": "En attente réception fournisseur",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 95,
+      "purchaseFeesEur": 20
     },
     {
       "id": "klna_tkt_012",
@@ -1444,7 +1480,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 450.8,
+      "purchaseFeesEur": 39.1
     },
     {
       "id": "klna_tkt_014",
@@ -1471,7 +1510,10 @@
       "saleCurrency": "EUR",
       "notes": "Billet vérifié — authentique",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 80,
+      "purchaseFeesEur": 10
     },
     {
       "id": "klna_tkt_015",
@@ -1498,7 +1540,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 207,
+      "purchaseFeesEur": 16.56
     },
     {
       "id": "klna_tkt_016",
@@ -1525,7 +1570,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 542.5,
+      "purchaseFeesEur": 6.5
     },
     {
       "id": "klna_tkt_017",
@@ -1552,7 +1600,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 215,
+      "purchaseFeesEur": 34
     },
     {
       "id": "klna_tkt_018",
@@ -1579,7 +1630,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 331.2,
+      "purchaseFeesEur": 38.64
     },
     {
       "id": "klna_tkt_019",
@@ -1606,7 +1660,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 576.25,
+      "purchaseFeesEur": 2.5
     },
     {
       "id": "klna_tkt_020",
@@ -1633,7 +1690,10 @@
       "saleCurrency": "EUR",
       "notes": "Billet vérifié — authentique",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 350,
+      "purchaseFeesEur": 18
     },
     {
       "id": "klna_tkt_021",
@@ -1660,7 +1720,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 455.4,
+      "purchaseFeesEur": 23.92
     },
     {
       "id": "klna_tkt_022",
@@ -1687,7 +1750,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 610,
+      "purchaseFeesEur": 8.5
     },
     {
       "id": "klna_tkt_023",
@@ -1714,7 +1780,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 485,
+      "purchaseFeesEur": 42
     },
     {
       "id": "klna_tkt_024",
@@ -1741,7 +1810,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 579.6,
+      "purchaseFeesEur": 9.2
     },
     {
       "id": "klna_tkt_025",
@@ -1768,7 +1840,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 643.75,
+      "purchaseFeesEur": 4.5
     },
     {
       "id": "klna_tkt_026",
@@ -1795,7 +1870,10 @@
       "saleCurrency": "EUR",
       "notes": "Billet vérifié — authentique",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 80,
+      "purchaseFeesEur": 26
     },
     {
       "id": "klna_tkt_027",
@@ -1822,7 +1900,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 207,
+      "purchaseFeesEur": 31.28
     },
     {
       "id": "klna_tkt_028",
@@ -1849,7 +1930,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 542.5,
+      "purchaseFeesEur": 10.5
     },
     {
       "id": "klna_tkt_029",
@@ -1876,7 +1960,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 215,
+      "purchaseFeesEur": 10
     },
     {
       "id": "klna_tkt_030",
@@ -1903,7 +1990,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 331.2,
+      "purchaseFeesEur": 16.56
     },
     {
       "id": "klna_tkt_031",
@@ -1930,7 +2020,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 576.25,
+      "purchaseFeesEur": 6.5
     },
     {
       "id": "klna_tkt_032",
@@ -1957,7 +2050,10 @@
       "saleCurrency": "EUR",
       "notes": "Billet vérifié — authentique",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 350,
+      "purchaseFeesEur": 34
     },
     {
       "id": "klna_tkt_033",
@@ -1984,7 +2080,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 455.4,
+      "purchaseFeesEur": 38.64
     },
     {
       "id": "klna_tkt_034",
@@ -2011,7 +2110,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 610,
+      "purchaseFeesEur": 2.5
     },
     {
       "id": "klna_tkt_035",
@@ -2038,7 +2140,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 485,
+      "purchaseFeesEur": 18
     },
     {
       "id": "klna_tkt_036",
@@ -2065,7 +2170,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 579.6,
+      "purchaseFeesEur": 23.92
     },
     {
       "id": "klna_tkt_037",
@@ -2092,7 +2200,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 643.75,
+      "purchaseFeesEur": 8.5
     },
     {
       "id": "klna_tkt_038",
@@ -2119,7 +2230,10 @@
       "saleCurrency": "EUR",
       "notes": "Billet vérifié — authentique",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 80,
+      "purchaseFeesEur": 42
     },
     {
       "id": "klna_tkt_039",
@@ -2146,7 +2260,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 207,
+      "purchaseFeesEur": 9.2
     },
     {
       "id": "klna_tkt_040",
@@ -2173,7 +2290,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 542.5,
+      "purchaseFeesEur": 4.5
     },
     {
       "id": "klna_tkt_041",
@@ -2200,7 +2320,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 215,
+      "purchaseFeesEur": 26
     },
     {
       "id": "klna_tkt_042",
@@ -2227,7 +2350,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 331.2,
+      "purchaseFeesEur": 31.28
     },
     {
       "id": "klna_tkt_043",
@@ -2254,7 +2380,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 576.25,
+      "purchaseFeesEur": 10.5
     },
     {
       "id": "klna_tkt_044",
@@ -2281,7 +2410,10 @@
       "saleCurrency": "EUR",
       "notes": "Billet vérifié — authentique",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 350,
+      "purchaseFeesEur": 10
     },
     {
       "id": "klna_tkt_045",
@@ -2308,7 +2440,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 455.4,
+      "purchaseFeesEur": 16.56
     },
     {
       "id": "klna_tkt_046",
@@ -2335,7 +2470,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 610,
+      "purchaseFeesEur": 6.5
     },
     {
       "id": "klna_tkt_047",
@@ -2362,7 +2500,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 485,
+      "purchaseFeesEur": 34
     },
     {
       "id": "klna_tkt_048",
@@ -2389,7 +2530,10 @@
       "saleCurrency": "USD",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.92,
+      "purchaseUnitPriceEur": 579.6,
+      "purchaseFeesEur": 38.64
     },
     {
       "id": "klna_tkt_049",
@@ -2416,7 +2560,10 @@
       "saleCurrency": "EUR",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 240,
+      "purchaseFeesEur": 15
     },
     {
       "id": "klna_tkt_050",
@@ -2443,7 +2590,10 @@
       "saleCurrency": "EUR",
       "notes": "Réservé Isabelle Mercier",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 1,
+      "purchaseUnitPriceEur": 340,
+      "purchaseFeesEur": 22
     },
     {
       "id": "klna_tkt_051",
@@ -2470,7 +2620,10 @@
       "saleCurrency": "AED",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "purchaseExchangeRateToEur": 0.25,
+      "purchaseUnitPriceEur": 2000,
+      "purchaseFeesEur": 50
     }
   ],
   "ticketAttachments": [
@@ -2774,12 +2927,14 @@
         "billingCountry": "France",
         "description": "PSG vs OM — Boulogne — Rang 12 — Places 14-15 (×2)",
         "quantity": 2,
-        "unitPriceHT": 375,
-        "vatRate": 20,
+        "unitPriceHT": 450,
+        "vatRate": 0,
         "paymentTerms": "Facture acquittée"
       },
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 900
     },
     {
       "id": "klna_txn_002",
@@ -2806,12 +2961,14 @@
         "billingCountry": "France",
         "description": "Tomorrowland — Comfort Pass — Places GA-08 (×1)",
         "quantity": 1,
-        "unitPriceHT": 1916.67,
-        "vatRate": 20,
+        "unitPriceHT": 2300,
+        "vatRate": 0,
         "paymentTerms": "Facture acquittée"
       },
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 2300
     },
     {
       "id": "klna_txn_003",
@@ -2836,13 +2993,15 @@
         "billingCountry": "France",
         "description": "PSG vs OM — Auteuil — Rang 8 — Place 22 (×1)",
         "quantity": 1,
-        "unitPriceHT": 516.67,
-        "vatRate": 20,
+        "unitPriceHT": 620,
+        "vatRate": 0,
         "paymentTerms": "Solde à régler avant l'événement",
         "notes": "Acompte 300€ versé"
       },
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 620
     },
     {
       "id": "klna_txn_004",
@@ -2861,7 +3020,9 @@
       "resalePlatform": "VIAGOGO",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 1140.8
     },
     {
       "id": "klna_txn_005",
@@ -2880,7 +3041,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": "Split lot Gold — paire 101-102",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 680
     },
     {
       "id": "klna_txn_006",
@@ -2899,7 +3062,9 @@
       "resalePlatform": "DIRECT_CLIENT",
       "notes": "Split lot Gold — paire 103-104",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 670
     },
     {
       "id": "klna_txn_007",
@@ -2916,7 +3081,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": "Réservation — acompte 50€",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 185
     },
     {
       "id": "klna_txn_008",
@@ -2935,7 +3102,9 @@
       "resalePlatform": "DIRECT_CLIENT",
       "notes": "Offre en cours — négociation broker Dubai",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 2100
     },
     {
       "id": "klna_txn_009",
@@ -2966,12 +3135,14 @@
         "billingCountry": "France",
         "description": "Bad Bunny — Pelouse Or — Gold — Places à confirmer (×4)",
         "quantity": 4,
-        "unitPriceHT": 245.83,
-        "vatRate": 20,
+        "unitPriceHT": 295,
+        "vatRate": 0,
         "paymentTerms": "Facture acquittée"
       },
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 1180
     },
     {
       "id": "klna_txn_010",
@@ -2990,7 +3161,9 @@
       "resalePlatform": "STUBHUB",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 296.24
     },
     {
       "id": "klna_txn_011",
@@ -3009,7 +3182,9 @@
       "resalePlatform": "VIAGOGO",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 860.25
     },
     {
       "id": "klna_txn_012",
@@ -3028,7 +3203,9 @@
       "resalePlatform": "PRIVATE_SALE",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 1105.84
     },
     {
       "id": "klna_txn_013",
@@ -3047,7 +3224,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 817
     },
     {
       "id": "klna_txn_014",
@@ -3066,7 +3245,9 @@
       "resalePlatform": "VIAGOGO",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 687.24
     },
     {
       "id": "klna_txn_015",
@@ -3085,7 +3266,9 @@
       "resalePlatform": "DIRECT_CLIENT",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 2037
     },
     {
       "id": "klna_txn_016",
@@ -3104,7 +3287,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 782.92
     },
     {
       "id": "klna_txn_017",
@@ -3123,7 +3308,9 @@
       "resalePlatform": "STUBHUB",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 966.5
     },
     {
       "id": "klna_txn_018",
@@ -3142,7 +3329,9 @@
       "resalePlatform": "DIRECT_CLIENT",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 329.36
     },
     {
       "id": "klna_txn_019",
@@ -3161,7 +3350,9 @@
       "resalePlatform": "PRIVATE_SALE",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 951.25
     },
     {
       "id": "klna_txn_020",
@@ -3180,7 +3371,9 @@
       "resalePlatform": "STUBHUB",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 947.6
     },
     {
       "id": "klna_txn_021",
@@ -3199,7 +3392,9 @@
       "resalePlatform": "VIAGOGO",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 913.75
     },
     {
       "id": "klna_txn_022",
@@ -3218,7 +3413,9 @@
       "resalePlatform": "PRIVATE_SALE",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 760.84
     },
     {
       "id": "klna_txn_023",
@@ -3237,7 +3434,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 1729.5
     },
     {
       "id": "klna_txn_024",
@@ -3256,7 +3455,9 @@
       "resalePlatform": "VIAGOGO",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 874.92
     },
     {
       "id": "klna_txn_025",
@@ -3275,7 +3476,9 @@
       "resalePlatform": "DIRECT_CLIENT",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 1074.75
     },
     {
       "id": "klna_txn_026",
@@ -3294,7 +3497,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 279.68
     },
     {
       "id": "klna_txn_027",
@@ -3313,7 +3518,9 @@
       "resalePlatform": "STUBHUB",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 814.5
     },
     {
       "id": "klna_txn_028",
@@ -3332,7 +3539,9 @@
       "resalePlatform": "DIRECT_CLIENT",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 1052.48
     },
     {
       "id": "klna_txn_029",
@@ -3351,7 +3560,9 @@
       "resalePlatform": "PRIVATE_SALE",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 1010.25
     },
     {
       "id": "klna_txn_030",
@@ -3370,7 +3581,9 @@
       "resalePlatform": "STUBHUB",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 651.36
     },
     {
       "id": "klna_txn_031",
@@ -3389,7 +3602,9 @@
       "resalePlatform": "VIAGOGO",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.25,
+      "negotiatedPriceEur": 1934
     },
     {
       "id": "klna_txn_032",
@@ -3408,7 +3623,9 @@
       "resalePlatform": "PRIVATE_SALE",
       "notes": null,
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 0.92,
+      "negotiatedPriceEur": 967.84
     },
     {
       "id": "klna_txn_033",
@@ -3424,7 +3641,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": "Coldplay Lyon — très satisfait",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 790
     },
     {
       "id": "klna_txn_034",
@@ -3440,7 +3659,9 @@
       "resalePlatform": "WHATSAPP",
       "notes": "Acompte 200€ Roland-Garros",
       "createdAt": "2026-01-01T08:00:00.000Z",
-      "updatedAt": "2026-02-20T12:00:00.000Z"
+      "updatedAt": "2026-02-20T12:00:00.000Z",
+      "exchangeRateToEur": 1,
+      "negotiatedPriceEur": 520
     }
   ]
 }

@@ -1,11 +1,11 @@
+import {
+  amountToEur,
+  FALLBACK_EXCHANGE_RATES_TO_EUR,
+  getRateToEur,
+} from "@/lib/exchange-rates";
 import type { Currency } from "@/types";
 
-/** Taux de conversion simplifiés vers EUR (base interne pour marges) */
-export const EXCHANGE_RATES_TO_EUR: Record<Currency, number> = {
-  EUR: 1,
-  USD: 0.92,
-  AED: 0.25,
-};
+export { FALLBACK_EXCHANGE_RATES_TO_EUR as EXCHANGE_RATES_TO_EUR };
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   EUR: "€",
@@ -13,8 +13,13 @@ export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   AED: "AED",
 };
 
-export function convertToEur(amount: number, currency: Currency): number {
-  return amount * EXCHANGE_RATES_TO_EUR[currency];
+export function convertToEur(
+  amount: number,
+  currency: Currency,
+  rateToEur?: number
+): number {
+  const rate = rateToEur ?? getRateToEur(currency);
+  return amountToEur(amount, rate);
 }
 
 export function formatCurrency(

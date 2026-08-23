@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FileText, ShoppingCart } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ExchangeRateField } from "@/components/forms/exchange-rate-field";
+import { useExchangeRate } from "@/hooks/use-exchange-rate";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -77,6 +79,7 @@ export function SaleFormDialog() {
       soldQuantity: 1,
       negotiatedPrice: 0,
       currency: "EUR",
+      exchangeRateToEur: 1,
       paymentStatus: "PAID",
       paymentMethod: "BANK_TRANSFER",
       deliveryStatus: "TO_DELIVER",
@@ -98,11 +101,20 @@ export function SaleFormDialog() {
   });
 
   const createNewClient = form.watch("createNewClient");
+  const newClientPhone = form.watch("newClientPhone");
   const selectedTicketId = form.watch("ticketId");
   const selectedClientId = form.watch("clientId");
   const soldQuantity = form.watch("soldQuantity");
   const negotiatedPrice = form.watch("negotiatedPrice");
   const currency = form.watch("currency");
+  const exchangeRate = useExchangeRate(currency);
+
+  useEffect(() => {
+    if (!exchangeRate.manual) {
+      form.setValue("exchangeRateToEur", exchangeRate.rate);
+    }
+  }, [exchangeRate.manual, exchangeRate.rate, form]);
+
   const paymentStatus = form.watch("paymentStatus");
   const invoiceEnabled = form.watch("invoice.enabled");
   const businessBringerId = form.watch("businessBringerId");
@@ -120,12 +132,14 @@ export function SaleFormDialog() {
   }, [availableTickets, transactions, selectedTicket?.eventId]);
 
   const applyTicketPricing = useCallback(
-    (ticket: (typeof availableTickets)[number], qty: number) => {
+    (ticket: (typeof availableTickets)[number], qty: number, options?: { resetCurrency?: boolean }) => {
       const clampedQty = Math.max(1, Math.min(qty, getTicketAvailableQuantity(ticket, transactions)));
       form.setValue("soldQuantity", clampedQty);
       if (ticket.targetSalePrice) {
         form.setValue("negotiatedPrice", ticket.targetSalePrice * clampedQty);
-        form.setValue("currency", ticket.saleCurrency);
+        if (options?.resetCurrency !== false) {
+          form.setValue("currency", ticket.saleCurrency);
+        }
       }
     },
     [form, transactions]
@@ -137,12 +151,14 @@ export function SaleFormDialog() {
         ? {
             firstName: form.getValues("newClientFirstName") ?? "",
             lastName: form.getValues("newClientLastName") ?? "",
+            phone: form.getValues("newClientPhone") ?? undefined,
           }
         : undefined;
 
     const defaults = buildDefaultInvoice({
       existingInvoiceCount: invoiceCount,
       client: selectedClient,
+      clientPhone: createNewClient ? newClientPhone : selectedClient?.phone,
       newClient,
       ticket: selectedTicket,
       soldQuantity: Number(soldQuantity) || 1,
@@ -158,6 +174,7 @@ export function SaleFormDialog() {
     form,
     invoiceCount,
     negotiatedPrice,
+    newClientPhone,
     paymentStatus,
     soldQuantity,
     selectedClient,
@@ -165,15 +182,14 @@ export function SaleFormDialog() {
   ]);
 
   useEffect(() => {
-    if (activeDialog === "sale") {
-      setActiveTab("sale");
-      if (dialogContext.ticketId) {
-        form.setValue("ticketId", dialogContext.ticketId);
-        const ticket = availableTickets.find((t) => t.id === dialogContext.ticketId);
-        const qty = dialogContext.soldQuantity ?? 1;
-        if (ticket) applyTicketPricing(ticket, qty);
-      }
-      refreshInvoiceFromSale();
+    if (activeDialog !== "sale") return;
+
+    setActiveTab("sale");
+    if (dialogContext.ticketId) {
+      form.setValue("ticketId", dialogContext.ticketId);
+      const ticket = availableTickets.find((t) => t.id === dialogContext.ticketId);
+      const qty = dialogContext.soldQuantity ?? 1;
+      if (ticket) applyTicketPricing(ticket, qty, { resetCurrency: true });
     }
   }, [
     activeDialog,
@@ -182,6 +198,21 @@ export function SaleFormDialog() {
     availableTickets,
     applyTicketPricing,
     form,
+  ]);
+
+  useEffect(() => {
+    if (activeDialog !== "sale") return;
+    refreshInvoiceFromSale();
+  }, [
+    activeDialog,
+    selectedClientId,
+    createNewClient,
+    newClientPhone,
+    currency,
+    negotiatedPrice,
+    soldQuantity,
+    paymentStatus,
+    selectedTicketId,
     refreshInvoiceFromSale,
   ]);
 
@@ -289,7 +320,7 @@ export function SaleFormDialog() {
                   onValueChange={(v) => {
                     form.setValue("ticketId", v);
                     const t = availableTickets.find((x) => x.id === v);
-                    if (t) applyTicketPricing(t, 1);
+                    if (t) applyTicketPricing(t, 1, { resetCurrency: true });
                   }}
                 >
                   <SelectTrigger><SelectValue placeholder="Sélectionner un billet..." /></SelectTrigger>
@@ -468,7 +499,9 @@ export function SaleFormDialog() {
                     {...form.register("soldQuantity", {
                       onChange: (e) => {
                         const qty = Number(e.target.value) || 1;
-                        if (selectedTicket) applyTicketPricing(selectedTicket, qty);
+                        if (selectedTicket) {
+                          applyTicketPricing(selectedTicket, qty, { resetCurrency: false });
+                        }
                       },
                     })}
                   />
@@ -479,7 +512,10 @@ export function SaleFormDialog() {
                 <FormField label="Devise">
                   <Select
                     value={form.watch("currency")}
-                    onValueChange={(v) => form.setValue("currency", v as SaleFormValues["currency"])}
+                    onValueChange={(v) => {
+                      form.setValue("currency", v as SaleFormValues["currency"]);
+                      exchangeRate.resetToLive();
+                    }}
                   >
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -490,6 +526,29 @@ export function SaleFormDialog() {
                   </Select>
                 </FormField>
               </FormRow>
+
+              <ExchangeRateField
+                currency={currency}
+                rate={exchangeRate.rate}
+                manual={exchangeRate.manual}
+                loading={exchangeRate.loading}
+                fetchedAt={exchangeRate.fetchedAt}
+                source={exchangeRate.source}
+                amount={Number(negotiatedPrice) || 0}
+                onRateChange={(value) => {
+                  exchangeRate.setManualRate(value);
+                  form.setValue("exchangeRateToEur", value);
+                }}
+                onManualChange={(checked) => {
+                  if (checked) {
+                    exchangeRate.setManualRate(form.getValues("exchangeRateToEur"));
+                  } else {
+                    exchangeRate.resetToLive();
+                    void exchangeRate.refresh();
+                  }
+                }}
+                onRefresh={() => void exchangeRate.refresh()}
+              />
 
               <FormRow cols={3}>
                 <FormField label="Canal revente">

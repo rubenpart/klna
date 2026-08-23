@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EntityTransactionsList } from "@/components/shared/entity-transactions-list";
+import { getTransactionAmountEur } from "@/lib/transaction-stats";
 import { formatCurrency } from "@/lib/currency";
 import { useCrmStore } from "@/stores/crm-store";
 import { PARTNER_STATUS_LABELS } from "@/types";
@@ -39,7 +40,7 @@ export function SellerDetail({ sellerId }: SellerDetailProps) {
 
   const stats = useMemo(() => {
     const uniqueClients = new Set(paidTransactions.map((t) => t.clientId));
-    const totalRevenue = paidTransactions.reduce((s, t) => s + t.negotiatedPrice, 0);
+    const totalRevenue = paidTransactions.reduce((s, t) => s + getTransactionAmountEur(t), 0);
     const ticketsSold = paidTransactions.reduce((s, t) => s + (t.soldQuantity ?? 1), 0);
     return {
       salesCount: paidTransactions.length,

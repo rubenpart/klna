@@ -183,6 +183,9 @@ model Ticket {
   purchaseFees       Decimal  @db.Decimal(12, 2) @default(0)
   purchaseCurrency   Currency @default(EUR)
   purchaseDate       DateTime
+  purchaseExchangeRateToEur Decimal @default(1) @db.Decimal(12, 6)
+  purchaseUnitPriceEur      Decimal @default(0) @db.Decimal(12, 2)
+  purchaseFeesEur           Decimal @default(0) @db.Decimal(12, 2)
 
   // Financials — Vente
   stockStatus        TicketStockStatus @default(IN_STOCK)
@@ -292,6 +295,8 @@ model Transaction {
   saleDate        DateTime        @default(now())
   negotiatedPrice Decimal         @db.Decimal(12, 2)
   currency        Currency        @default(EUR)
+  exchangeRateToEur Decimal       @default(1) @db.Decimal(12, 6)
+  negotiatedPriceEur Decimal       @default(0) @db.Decimal(12, 2)
   paymentStatus   PaymentStatus   @default(PENDING)
   paymentMethod   PaymentMethod?
   deliveryStatus  DeliveryStatus  @default(TO_DELIVER)

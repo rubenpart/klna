@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/currency";
-import { formatDateTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import type { Transaction } from "@/types";
 import { PAYMENT_STATUS_LABELS, RESALE_PLATFORM_LABELS } from "@/types";
 
@@ -53,7 +53,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 <p className="text-sm font-semibold tabular-nums">
                   {formatCurrency(txn.negotiatedPrice, txn.currency)}
                 </p>
-                <p className="text-[10px] text-muted-foreground">{formatDateTime(txn.saleDate)}</p>
+                <p className="text-[10px] text-muted-foreground">{formatDate(txn.saleDate)}</p>
               </div>
               <ArrowRight className="hidden h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
             </div>

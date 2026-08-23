@@ -9,6 +9,12 @@ export interface MarginInput {
   saleUnitPrice: number;
   resaleFees: number;
   saleCurrency: Currency;
+  purchaseRateToEur?: number;
+  saleRateToEur?: number;
+  purchaseUnitPriceEur?: number;
+  purchaseFeesEur?: number;
+  saleUnitPriceEur?: number;
+  resaleFeesEur?: number;
 }
 
 /**
@@ -19,12 +25,16 @@ export function calculateMargin(input: MarginInput): MarginResult {
   const qty = input.quantity ?? 1;
 
   const totalPurchaseEur =
-    convertToEur(input.purchaseUnitPrice * qty, input.purchaseCurrency) +
-    convertToEur(input.purchaseFees, input.purchaseCurrency);
+    input.purchaseUnitPriceEur != null
+      ? input.purchaseUnitPriceEur * qty + (input.purchaseFeesEur ?? 0)
+      : convertToEur(input.purchaseUnitPrice * qty, input.purchaseCurrency, input.purchaseRateToEur) +
+        convertToEur(input.purchaseFees, input.purchaseCurrency, input.purchaseRateToEur);
 
   const totalSaleEur =
-    convertToEur(input.saleUnitPrice * qty, input.saleCurrency) -
-    convertToEur(input.resaleFees, input.saleCurrency);
+    input.saleUnitPriceEur != null
+      ? input.saleUnitPriceEur * qty - (input.resaleFeesEur ?? 0)
+      : convertToEur(input.saleUnitPrice * qty, input.saleCurrency, input.saleRateToEur) -
+        convertToEur(input.resaleFees, input.saleCurrency, input.saleRateToEur);
 
   const netMargin = totalSaleEur - totalPurchaseEur;
   const marginRate = totalPurchaseEur > 0 ? (netMargin / totalPurchaseEur) * 100 : 0;

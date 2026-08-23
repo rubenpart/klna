@@ -59,7 +59,7 @@ export function EditInvoiceDialog() {
       description: "",
       quantity: 1,
       unitPriceHT: 0,
-      vatRate: 20,
+      vatRate: 0,
     },
   });
 

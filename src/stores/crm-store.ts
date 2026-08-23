@@ -30,6 +30,8 @@ import type {
   UpdateSaleStatusFormValues,
 } from "@/lib/validations/crm";
 import { invoiceFormToInvoice, ticketDescription } from "@/lib/invoice";
+import { amountToEur } from "@/lib/exchange-rates";
+import { getTransactionAmountEur } from "@/lib/transaction-stats";
 import {
   getTicketAvailableQuantity,
   getTicketSoldQuantity,
@@ -134,7 +136,7 @@ function rehydrateRelations(
     const clientTxns = transactions.filter(
       (t) => t.clientId === c.id && t.paymentStatus !== "PENDING"
     );
-    return { ...c, totalSpent: clientTxns.reduce((s, t) => s + t.negotiatedPrice, 0) };
+    return { ...c, totalSpent: clientTxns.reduce((s, t) => s + getTransactionAmountEur(t), 0) };
   });
 
   const businessBringers = state.businessBringers.map((b) => {
@@ -148,7 +150,7 @@ function rehydrateRelations(
     return {
       ...b,
       referralCount: txns.length,
-      totalReferredRevenue: txns.reduce((s, t) => s + t.negotiatedPrice, 0),
+      totalReferredRevenue: txns.reduce((s, t) => s + getTransactionAmountEur(t), 0),
       totalCommissionEarned: totalCommission,
     };
   });
@@ -160,7 +162,7 @@ function rehydrateRelations(
     return {
       ...s,
       salesCount: txns.length,
-      totalSalesRevenue: txns.reduce((sum, t) => sum + t.negotiatedPrice, 0),
+      totalSalesRevenue: txns.reduce((sum, t) => sum + getTransactionAmountEur(t), 0),
     };
   });
 
@@ -180,7 +182,7 @@ function computeAll(state: ReturnType<typeof rehydrateRelations>) {
     eventStats: computeEventStats(state.events, state.tickets, state.transactions),
     kpis: computeKPIs(state.tickets, state.transactions),
     topEvents: computeTopEvents(state.tickets, state.events),
-    monthlySales: computeMonthlySales(state.transactions),
+    monthlySales: computeMonthlySales(state.transactions, state.tickets),
     channelProfitability: computeChannelProfitability(state.transactions, state.tickets),
     urgentDeliveries: getUrgentDeliveries(state.transactions, state.tickets, state.events),
   };
@@ -292,6 +294,7 @@ export const useCrmStore = create<CrmState>((set, get) => ({
 
   addTicket: (data) => {
     const seatsPending = data.seatsPending ?? false;
+    const purchaseExchangeRateToEur = data.purchaseExchangeRateToEur;
     const ticket: Ticket = {
       id: generateId("tkt"),
       eventId: data.eventId,
@@ -307,6 +310,9 @@ export const useCrmStore = create<CrmState>((set, get) => ({
       purchaseFees: data.purchaseFees,
       purchaseCurrency: data.purchaseCurrency,
       purchaseDate: new Date(data.purchaseDate).toISOString(),
+      purchaseExchangeRateToEur,
+      purchaseUnitPriceEur: amountToEur(data.purchaseUnitPrice, purchaseExchangeRateToEur),
+      purchaseFeesEur: amountToEur(data.purchaseFees, purchaseExchangeRateToEur),
       stockStatus: data.stockStatus,
       transferStatus: data.transferStatus,
       targetSalePrice: data.targetSalePrice,
@@ -355,6 +361,8 @@ export const useCrmStore = create<CrmState>((set, get) => ({
     const unitSalePrice = data.negotiatedPrice / soldQuantity;
     const fullySold = soldSoFar + soldQuantity >= ticket.quantity;
 
+    const exchangeRateToEur = data.exchangeRateToEur;
+
     const transaction: Transaction = {
       id: generateId("txn"),
       ticketId: data.ticketId,
@@ -367,6 +375,8 @@ export const useCrmStore = create<CrmState>((set, get) => ({
       saleDate: data.saleDate ? new Date(data.saleDate).toISOString() : new Date().toISOString(),
       negotiatedPrice: data.negotiatedPrice,
       currency: data.currency,
+      exchangeRateToEur,
+      negotiatedPriceEur: amountToEur(data.negotiatedPrice, exchangeRateToEur),
       paymentStatus: data.paymentStatus,
       paymentMethod: data.paymentMethod,
       deliveryStatus: data.deliveryStatus,

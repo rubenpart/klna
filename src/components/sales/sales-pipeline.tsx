@@ -31,8 +31,9 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/currency";
+import { getTransactionAmountEur } from "@/lib/transaction-stats";
 import { salePlacementLabel } from "@/lib/invoice";
-import { formatDateTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import type { Transaction } from "@/types";
 import {
   DELIVERY_STATUS_LABELS,
@@ -92,7 +93,7 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
             Date <ArrowUpDown className="ml-1 h-3 w-3" />
           </Button>
         ),
-        cell: ({ row }) => <span className="text-xs">{formatDateTime(row.original.saleDate)}</span>,
+        cell: ({ row }) => <span className="text-xs">{formatDate(row.original.saleDate)}</span>,
       },
       {
         id: "client",
@@ -250,7 +251,7 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
 
   const totalRevenue = transactions
     .filter((t) => t.paymentStatus !== "PENDING")
-    .reduce((s, t) => s + t.negotiatedPrice, 0);
+    .reduce((s, t) => s + getTransactionAmountEur(t), 0);
 
   return (
     <div className="space-y-4">
@@ -386,7 +387,7 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
                   {txn.invoice.number}
                 </Button>
               )}
-              <p className="text-[10px] text-muted-foreground">{formatDateTime(txn.saleDate)}</p>
+              <p className="text-[10px] text-muted-foreground">{formatDate(txn.saleDate)}</p>
             </CardContent>
           </Card>
         ))}

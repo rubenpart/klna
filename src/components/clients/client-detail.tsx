@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EntityTransactionsList } from "@/components/shared/entity-transactions-list";
 import { formatCurrency } from "@/lib/currency";
+import { getTransactionAmountEur } from "@/lib/transaction-stats";
 import { sumTransactionMargins } from "@/lib/transaction-stats";
 import { useCrmStore } from "@/stores/crm-store";
 
@@ -67,7 +68,7 @@ export function ClientDetail({ clientId }: ClientDetailProps) {
   );
 
   const stats = useMemo(() => {
-    const totalSpent = paidTransactions.reduce((s, t) => s + t.negotiatedPrice, 0);
+    const totalSpent = paidTransactions.reduce((s, t) => s + getTransactionAmountEur(t), 0);
     const totalMargin = sumTransactionMargins(paidTransactions, tickets);
     const ticketsSold = paidTransactions.reduce((s, t) => s + (t.soldQuantity ?? 1), 0);
     return { totalSpent, totalMargin, purchaseCount: paidTransactions.length, ticketsSold };
@@ -136,7 +137,7 @@ export function ClientDetail({ clientId }: ClientDetailProps) {
             <CardContent className="p-3">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">LTV</p>
               <p className="text-xl font-bold tabular-nums">
-                {formatCurrency(stats.totalSpent, client.creditCurrency)}
+                {formatCurrency(stats.totalSpent, "EUR")}
               </p>
             </CardContent>
           </Card>

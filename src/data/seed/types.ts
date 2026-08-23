@@ -81,6 +81,9 @@ export interface SeedTicket {
   purchaseFees: number;
   purchaseCurrency: Currency;
   purchaseDate: string;
+  purchaseExchangeRateToEur?: number;
+  purchaseUnitPriceEur?: number;
+  purchaseFeesEur?: number;
   stockStatus: TicketStockStatus;
   transferStatus: TransferStatus;
   targetSalePrice: number | null;
@@ -130,6 +133,8 @@ export interface SeedTransaction {
   saleDate: string;
   negotiatedPrice: number;
   currency: Currency;
+  exchangeRateToEur?: number;
+  negotiatedPriceEur?: number;
   paymentStatus: PaymentStatus;
   paymentMethod: PaymentMethod | null;
   deliveryStatus: DeliveryStatus;

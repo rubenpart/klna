@@ -90,10 +90,17 @@ export function unitPriceHTFromTTC(totalTTC: number, quantity: number, vatRate: 
   return Math.round((totalHT / quantity) * 100) / 100;
 }
 
+export function getDefaultVatRate(phone?: string | null): number {
+  if (!phone) return 0;
+  const normalized = phone.replace(/\s/g, "");
+  return normalized.startsWith("+971") ? 5 : 0;
+}
+
 export function buildDefaultInvoice(params: {
   existingInvoiceCount: number;
   client?: Client;
-  newClient?: { firstName: string; lastName: string };
+  clientPhone?: string;
+  newClient?: { firstName: string; lastName: string; phone?: string };
   ticket?: Ticket;
   soldQuantity?: number;
   negotiatedPrice: number;
@@ -101,7 +108,9 @@ export function buildDefaultInvoice(params: {
   paymentStatus?: "PAID" | "DEPOSIT" | "PENDING";
 }): InvoiceFormValues {
   const issueDate = getAppNow().toISOString().slice(0, 10);
-  const vatRate = 20;
+  const vatRate = getDefaultVatRate(
+    params.clientPhone ?? params.newClient?.phone ?? params.client?.phone
+  );
   const quantity = params.soldQuantity ?? params.ticket?.quantity ?? 1;
   const billingName = params.newClient
     ? `${params.newClient.firstName} ${params.newClient.lastName}`.trim()

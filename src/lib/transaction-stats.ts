@@ -1,21 +1,40 @@
 import { calculateMargin } from "@/lib/margin";
+import {
+  amountToEur,
+  getTicketPurchaseFeesEur,
+  getTicketPurchaseUnitEur,
+  getTransactionAmountEur,
+} from "@/lib/exchange-rates";
 import type { BusinessBringer, Ticket, Transaction } from "@/types";
 
 export function computeTransactionMargin(transaction: Transaction, ticket?: Ticket): number {
   if (!ticket) return 0;
 
   const qty = transaction.soldQuantity ?? 1;
-  const unitSale = transaction.negotiatedPrice / qty;
   const feeShare = ticket.purchaseFees * (qty / ticket.quantity);
+  const feeShareEur = getTicketPurchaseFeesEur(ticket) * (qty / ticket.quantity);
+  const resaleFeeShare = ticket.resaleFees * (qty / ticket.quantity);
+  const saleTotalEur = getTransactionAmountEur(transaction);
+  const unitSaleEur = saleTotalEur / qty;
+  const resaleFeeShareEur =
+    transaction.exchangeRateToEur != null
+      ? amountToEur(resaleFeeShare, transaction.exchangeRateToEur)
+      : undefined;
 
   return calculateMargin({
     purchaseUnitPrice: ticket.purchaseUnitPrice,
     purchaseFees: feeShare,
     quantity: qty,
     purchaseCurrency: ticket.purchaseCurrency,
-    saleUnitPrice: unitSale,
-    resaleFees: ticket.resaleFees * (qty / ticket.quantity),
+    purchaseRateToEur: ticket.purchaseExchangeRateToEur,
+    purchaseUnitPriceEur: getTicketPurchaseUnitEur(ticket),
+    purchaseFeesEur: feeShareEur,
+    saleUnitPrice: transaction.negotiatedPrice / qty,
+    resaleFees: resaleFeeShare,
     saleCurrency: transaction.currency,
+    saleRateToEur: transaction.exchangeRateToEur,
+    saleUnitPriceEur: unitSaleEur,
+    resaleFeesEur: resaleFeeShareEur,
   }).netMargin;
 }
 
@@ -41,3 +60,5 @@ export function sumBringerCommissions(
 ): number {
   return transactions.reduce((sum, txn) => sum + computeBringerCommission(txn, bringer), 0);
 }
+
+export { getTransactionAmountEur };

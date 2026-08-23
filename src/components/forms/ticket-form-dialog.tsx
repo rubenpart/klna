@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ExchangeRateField } from "@/components/forms/exchange-rate-field";
+import { useExchangeRate } from "@/hooks/use-exchange-rate";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -40,7 +42,8 @@ const defaultFormValues: TicketFormValues = {
   purchaseUnitPrice: 0,
   purchaseFees: 0,
   purchaseCurrency: "EUR",
-  purchaseDate: new Date().toISOString().slice(0, 16),
+  purchaseExchangeRateToEur: 1,
+  purchaseDate: new Date().toISOString().slice(0, 10),
   targetSalePrice: undefined,
   minimumSalePrice: undefined,
   saleCurrency: "EUR",
@@ -75,6 +78,17 @@ export function TicketFormDialog() {
   const isNewCategory = eventCategories.length === 0 || categorySelection === NEW_CATEGORY_VALUE;
   const selectedCategory = eventCategories.find((c) => c.key === categorySelection);
   const seatsPending = form.watch("seatsPending");
+  const purchaseCurrency = form.watch("purchaseCurrency");
+  const purchaseUnitPrice = Number(form.watch("purchaseUnitPrice")) || 0;
+  const purchaseFees = Number(form.watch("purchaseFees")) || 0;
+  const quantity = Number(form.watch("quantity")) || 1;
+  const purchaseExchange = useExchangeRate(purchaseCurrency);
+
+  useEffect(() => {
+    if (!purchaseExchange.manual) {
+      form.setValue("purchaseExchangeRateToEur", purchaseExchange.rate);
+    }
+  }, [form, purchaseExchange.manual, purchaseExchange.rate]);
 
   useEffect(() => {
     if (activeDialog !== "ticket") return;
@@ -82,7 +96,7 @@ export function TicketFormDialog() {
     form.reset({
       ...defaultFormValues,
       eventId: dialogContext.eventId ?? "",
-      purchaseDate: new Date().toISOString().slice(0, 16),
+      purchaseDate: new Date().toISOString().slice(0, 10),
     });
     setCategorySelection("");
     setCategoryError(null);
@@ -338,8 +352,30 @@ export function TicketFormDialog() {
                 </Select>
               </FormField>
             </FormRow>
+            <ExchangeRateField
+              currency={purchaseCurrency}
+              rate={purchaseExchange.rate}
+              manual={purchaseExchange.manual}
+              loading={purchaseExchange.loading}
+              fetchedAt={purchaseExchange.fetchedAt}
+              source={purchaseExchange.source}
+              amount={purchaseUnitPrice * quantity + purchaseFees}
+              onRateChange={(value) => {
+                purchaseExchange.setManualRate(value);
+                form.setValue("purchaseExchangeRateToEur", value);
+              }}
+              onManualChange={(checked) => {
+                if (checked) {
+                  purchaseExchange.setManualRate(form.getValues("purchaseExchangeRateToEur"));
+                } else {
+                  purchaseExchange.resetToLive();
+                  void purchaseExchange.refresh();
+                }
+              }}
+              onRefresh={() => void purchaseExchange.refresh()}
+            />
             <FormField label="Date d'achat" required>
-              <Input type="datetime-local" {...form.register("purchaseDate")} />
+              <Input type="date" {...form.register("purchaseDate")} />
             </FormField>
           </div>
 

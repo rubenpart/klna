@@ -88,6 +88,10 @@ export interface Ticket {
   purchaseFees: number;
   purchaseCurrency: Currency;
   purchaseDate: string;
+  /** 1 unit of purchase currency = X EUR at purchase time */
+  purchaseExchangeRateToEur: number;
+  purchaseUnitPriceEur: number;
+  purchaseFeesEur: number;
   stockStatus: TicketStockStatus;
   transferStatus: TransferStatus;
   targetSalePrice?: number;
@@ -175,6 +179,9 @@ export interface Transaction {
   saleDate: string;
   negotiatedPrice: number;
   currency: Currency;
+  /** 1 unit of sale currency = X EUR at sale time */
+  exchangeRateToEur: number;
+  negotiatedPriceEur: number;
   paymentStatus: PaymentStatus;
   paymentMethod?: PaymentMethod;
   deliveryStatus: DeliveryStatus;

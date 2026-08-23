@@ -1,4 +1,12 @@
 import { calculateMargin } from "@/lib/margin";
+import {
+  amountToEur,
+  FALLBACK_EXCHANGE_RATES_TO_EUR,
+  getTicketPurchaseFeesEur,
+  getTicketPurchaseUnitEur,
+  getTransactionAmountEur,
+} from "@/lib/exchange-rates";
+import { computeTransactionMargin } from "@/lib/transaction-stats";
 import { getTicketAvailableQuantity, getTicketSoldQuantity } from "@/lib/ticket-stock";
 import { getAppNow, getDemoNow } from "@/lib/demo-time";
 import { hoursUntil } from "@/lib/utils";
@@ -15,7 +23,25 @@ import type {
   UrgentDelivery,
 } from "@/types";
 import { SEED_DATABASE } from "./index";
-import type { SeedEvent } from "./types";
+import type { SeedEvent, SeedTicket, SeedTransaction } from "./types";
+
+function resolveTicketExchange(seed: SeedTicket) {
+  const rate =
+    seed.purchaseExchangeRateToEur ?? FALLBACK_EXCHANGE_RATES_TO_EUR[seed.purchaseCurrency];
+  return {
+    purchaseExchangeRateToEur: rate,
+    purchaseUnitPriceEur: seed.purchaseUnitPriceEur ?? amountToEur(seed.purchaseUnitPrice, rate),
+    purchaseFeesEur: seed.purchaseFeesEur ?? amountToEur(seed.purchaseFees, rate),
+  };
+}
+
+function resolveTransactionExchange(seed: SeedTransaction) {
+  const rate = seed.exchangeRateToEur ?? FALLBACK_EXCHANGE_RATES_TO_EUR[seed.currency];
+  return {
+    exchangeRateToEur: rate,
+    negotiatedPriceEur: seed.negotiatedPriceEur ?? amountToEur(seed.negotiatedPrice, rate),
+  };
+}
 
 export interface HydratedDatabase {
   events: Event[];
@@ -148,6 +174,7 @@ export function hydrateSeedData(): HydratedDatabase {
     purchaseFees: seed.purchaseFees,
     purchaseCurrency: seed.purchaseCurrency,
     purchaseDate: seed.purchaseDate,
+    ...resolveTicketExchange(seed),
     stockStatus: seed.stockStatus,
     transferStatus: seed.transferStatus,
     targetSalePrice: seed.targetSalePrice ?? undefined,
@@ -176,6 +203,7 @@ export function hydrateSeedData(): HydratedDatabase {
     saleDate: seed.saleDate,
     negotiatedPrice: seed.negotiatedPrice,
     currency: seed.currency,
+    ...resolveTransactionExchange(seed),
     paymentStatus: seed.paymentStatus,
     paymentMethod: seed.paymentMethod ?? undefined,
     deliveryStatus: seed.deliveryStatus,
@@ -198,7 +226,7 @@ export function hydrateSeedData(): HydratedDatabase {
     const clientTxns = transactions.filter(
       (t) => t.clientId === client.id && t.paymentStatus !== "PENDING"
     );
-    client.totalSpent = clientTxns.reduce((sum, t) => sum + t.negotiatedPrice, 0);
+    client.totalSpent = clientTxns.reduce((sum, t) => sum + getTransactionAmountEur(t), 0);
 
     client.totalMarginGenerated = clientTxns.reduce((sum, t) => {
       const ticket = ticketMap.get(t.ticketId);
@@ -222,22 +250,21 @@ export function hydrateSeedData(): HydratedDatabase {
 export function computeKPIs(tickets: Ticket[], transactions: Transaction[] = []): DashboardKPIs {
   const totalRevenue = transactions
     .filter((t) => t.paymentStatus !== "PENDING")
-    .reduce((sum, t) => sum + t.negotiatedPrice, 0);
+    .reduce((sum, t) => sum + getTransactionAmountEur(t), 0);
 
   const soldTxns = transactions.filter((t) => t.paymentStatus !== "PENDING");
   const margins = soldTxns.map((txn) => {
     const ticket = tickets.find((t) => t.id === txn.ticketId);
-    if (!ticket) return { netMargin: txn.negotiatedPrice * 0.25, marginRate: 25 };
+    if (!ticket) {
+      return { netMargin: getTransactionAmountEur(txn) * 0.25, marginRate: 25 };
+    }
+    const netMargin = computeTransactionMargin(txn, ticket);
     const qty = txn.soldQuantity ?? 1;
-    return calculateMargin({
-      purchaseUnitPrice: ticket.purchaseUnitPrice,
-      purchaseFees: ticket.purchaseFees * (qty / ticket.quantity),
-      quantity: qty,
-      purchaseCurrency: ticket.purchaseCurrency,
-      saleUnitPrice: txn.negotiatedPrice / qty,
-      resaleFees: ticket.resaleFees * (qty / ticket.quantity),
-      saleCurrency: txn.currency,
-    });
+    const purchaseEur =
+      getTicketPurchaseUnitEur(ticket) * qty +
+      getTicketPurchaseFeesEur(ticket) * (qty / ticket.quantity);
+    const marginRate = purchaseEur > 0 ? (netMargin / purchaseEur) * 100 : 0;
+    return { netMargin, marginRate };
   });
 
   const totalGrossMargin = margins.reduce((sum, m) => sum + m.netMargin, 0);
@@ -251,7 +278,7 @@ export function computeKPIs(tickets: Ticket[], transactions: Transaction[] = [])
       const d = new Date(t.saleDate);
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     })
-    .reduce((sum, t) => sum + t.negotiatedPrice, 0);
+    .reduce((sum, t) => sum + getTransactionAmountEur(t), 0);
 
   const sellableTickets = tickets.filter(
     (t) => getTicketAvailableQuantity(t, transactions) > 0
@@ -259,30 +286,16 @@ export function computeKPIs(tickets: Ticket[], transactions: Transaction[] = [])
 
   const stockInvestment = sellableTickets.reduce((sum, t) => {
     const available = getTicketAvailableQuantity(t, transactions);
-    const m = calculateMargin({
-      purchaseUnitPrice: t.purchaseUnitPrice,
-      purchaseFees: t.purchaseFees * (available / t.quantity),
-      quantity: available,
-      purchaseCurrency: t.purchaseCurrency,
-      saleUnitPrice: 0,
-      resaleFees: 0,
-      saleCurrency: t.saleCurrency,
-    });
-    return sum + m.totalPurchaseEur;
+    const unitEur = getTicketPurchaseUnitEur(t);
+    const feesEur = getTicketPurchaseFeesEur(t) * (available / t.quantity);
+    return sum + unitEur * available + feesEur;
   }, 0);
 
   const stockEstimatedValue = sellableTickets.reduce((sum, t) => {
     const available = getTicketAvailableQuantity(t, transactions);
-    const m = calculateMargin({
-      purchaseUnitPrice: t.purchaseUnitPrice,
-      purchaseFees: t.purchaseFees * (available / t.quantity),
-      quantity: available,
-      purchaseCurrency: t.purchaseCurrency,
-      saleUnitPrice: t.targetSalePrice ?? 0,
-      resaleFees: t.resaleFees * (available / t.quantity),
-      saleCurrency: t.saleCurrency,
-    });
-    return sum + m.totalSaleEur;
+    const target = t.targetSalePrice ?? 0;
+    const rate = FALLBACK_EXCHANGE_RATES_TO_EUR[t.saleCurrency];
+    return sum + amountToEur(target * available, rate);
   }, 0);
 
   return {
@@ -357,16 +370,7 @@ export function computeEventStats(
     for (const txn of transactions) {
       const ticket = eventTickets.find((t) => t.id === txn.ticketId);
       if (!ticket || txn.paymentStatus === "PENDING") continue;
-      const qty = txn.soldQuantity ?? 1;
-      totalMargin += calculateMargin({
-        purchaseUnitPrice: ticket.purchaseUnitPrice,
-        purchaseFees: ticket.purchaseFees * (qty / ticket.quantity),
-        quantity: qty,
-        purchaseCurrency: ticket.purchaseCurrency,
-        saleUnitPrice: txn.negotiatedPrice / qty,
-        resaleFees: ticket.resaleFees * (qty / ticket.quantity),
-        saleCurrency: txn.currency,
-      }).netMargin;
+      totalMargin += computeTransactionMargin(txn, ticket);
     }
 
     return {
@@ -417,8 +421,10 @@ export function computeTopEvents(
 const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
 export function computeMonthlySales(
-  transactions: Transaction[]
+  transactions: Transaction[],
+  tickets: Ticket[] = []
 ): { month: string; revenue: number; margin: number }[] {
+  const ticketMap = new Map(tickets.map((t) => [t.id, t]));
   const byMonth = new Map<string, { revenue: number; margin: number }>();
 
   for (const txn of transactions) {
@@ -427,8 +433,8 @@ export function computeMonthlySales(
     const key = `${d.getFullYear()}-${d.getMonth()}`;
     const cur = byMonth.get(key) ?? { revenue: 0, margin: 0 };
     byMonth.set(key, {
-      revenue: cur.revenue + txn.negotiatedPrice,
-      margin: cur.margin + txn.negotiatedPrice * 0.28,
+      revenue: cur.revenue + getTransactionAmountEur(txn),
+      margin: cur.margin + computeTransactionMargin(txn, ticketMap.get(txn.ticketId)),
     });
   }
 
@@ -461,18 +467,7 @@ export function computeChannelProfitability(
     const platform = txn.resalePlatform ?? "DIRECT_CLIENT";
     const channel = labels[platform] ?? platform;
     const ticket = ticketMap.get(txn.ticketId);
-    let margin = txn.negotiatedPrice * 0.25;
-    if (ticket?.actualSalePrice) {
-      margin = calculateMargin({
-        purchaseUnitPrice: ticket.purchaseUnitPrice,
-        purchaseFees: ticket.purchaseFees,
-        quantity: ticket.quantity,
-        purchaseCurrency: ticket.purchaseCurrency,
-        saleUnitPrice: ticket.actualSalePrice,
-        resaleFees: ticket.resaleFees,
-        saleCurrency: ticket.saleCurrency,
-      }).netMargin;
-    }
+    const margin = computeTransactionMargin(txn, ticket);
     const cur = byChannel.get(channel) ?? { margin: 0, count: 0 };
     byChannel.set(channel, { margin: cur.margin + margin, count: cur.count + 1 });
   }
