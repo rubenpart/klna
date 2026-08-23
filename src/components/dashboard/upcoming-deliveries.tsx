@@ -18,7 +18,7 @@ export function UpcomingDeliveries({ deliveries }: UpcomingDeliveriesProps) {
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
+            <AlertTriangle className="h-4 w-4 shrink-0 text-red-600" />
             <span className="truncate">Livraisons Urgentes</span>
             <Badge variant="critical">{deliveries.length}</Badge>
           </CardTitle>
@@ -50,7 +50,7 @@ export function UpcomingDeliveries({ deliveries }: UpcomingDeliveriesProps) {
                 >
                   <Clock
                     className={`h-4 w-4 ${
-                      d.urgencyLevel === "critical" ? "animate-pulse text-red-400" : "text-amber-400"
+                      d.urgencyLevel === "critical" ? "animate-pulse text-red-600" : "text-amber-600"
                     }`}
                   />
                 </div>

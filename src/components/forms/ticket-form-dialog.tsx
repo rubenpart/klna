@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,8 +22,33 @@ import {
 } from "@/components/ui/select";
 import { FormActions, FormField, FormRow } from "@/components/forms/form-field";
 import { ticketFormSchema, type TicketFormValues } from "@/lib/validations/crm";
+import { getEventCategoryOptions } from "@/lib/ticket-stock";
 import { useCrmStore } from "@/stores/crm-store";
 import { TICKET_TYPE_LABELS } from "@/types";
+
+const NEW_CATEGORY_VALUE = "__new__";
+
+const defaultFormValues: TicketFormValues = {
+  eventId: "",
+  supplierId: "",
+  section: "",
+  category: "",
+  row: "",
+  seats: "",
+  ticketType: "E_TICKET_PDF",
+  quantity: 1,
+  purchaseUnitPrice: 0,
+  purchaseFees: 0,
+  purchaseCurrency: "EUR",
+  purchaseDate: new Date().toISOString().slice(0, 16),
+  targetSalePrice: undefined,
+  minimumSalePrice: undefined,
+  saleCurrency: "EUR",
+  stockStatus: "IN_STOCK",
+  transferStatus: "IN_STOCK",
+  seatsPending: false,
+  notes: "",
+};
 
 export function TicketFormDialog() {
   const activeDialog = useCrmStore((s) => s.activeDialog);
@@ -32,43 +57,98 @@ export function TicketFormDialog() {
   const addTicket = useCrmStore((s) => s.addTicket);
   const events = useCrmStore((s) => s.events);
   const suppliers = useCrmStore((s) => s.suppliers);
+  const allTickets = useCrmStore((s) => s.tickets);
+
+  const [categorySelection, setCategorySelection] = useState<string>("");
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketFormSchema),
-    defaultValues: {
-      eventId: "",
-      supplierId: "",
-      section: "",
-      category: "",
-      row: "",
-      seats: "",
-      ticketType: "E_TICKET_PDF",
-      quantity: 1,
-      purchaseUnitPrice: 0,
-      purchaseFees: 0,
-      purchaseCurrency: "EUR",
-      purchaseDate: new Date().toISOString().slice(0, 16),
-      targetSalePrice: undefined,
-      saleCurrency: "EUR",
-      stockStatus: "IN_STOCK",
-      transferStatus: "IN_STOCK",
-      notes: "",
-    },
+    defaultValues: defaultFormValues,
   });
+
+  const eventId = form.watch("eventId");
+  const eventCategories = useMemo(
+    () => (eventId ? getEventCategoryOptions(allTickets, eventId) : []),
+    [allTickets, eventId]
+  );
+  const isNewCategory = eventCategories.length === 0 || categorySelection === NEW_CATEGORY_VALUE;
+  const selectedCategory = eventCategories.find((c) => c.key === categorySelection);
+  const seatsPending = form.watch("seatsPending");
 
   useEffect(() => {
-    if (activeDialog === "ticket" && dialogContext.eventId) {
-      form.setValue("eventId", dialogContext.eventId);
-    }
+    if (activeDialog !== "ticket") return;
+
+    form.reset({
+      ...defaultFormValues,
+      eventId: dialogContext.eventId ?? "",
+      purchaseDate: new Date().toISOString().slice(0, 16),
+    });
+    setCategorySelection("");
+    setCategoryError(null);
   }, [activeDialog, dialogContext.eventId, form]);
 
+  useEffect(() => {
+    if (!eventId) {
+      setCategorySelection("");
+      form.setValue("section", "");
+      form.setValue("category", "");
+      return;
+    }
+
+    if (eventCategories.length === 0) {
+      setCategorySelection(NEW_CATEGORY_VALUE);
+      return;
+    }
+
+    if (
+      categorySelection &&
+      categorySelection !== NEW_CATEGORY_VALUE &&
+      !eventCategories.some((c) => c.key === categorySelection)
+    ) {
+      setCategorySelection("");
+      form.setValue("section", "");
+      form.setValue("category", "");
+    }
+  }, [eventId, eventCategories, categorySelection, form]);
+
+  const lockedEventId = dialogContext.eventId;
+  const selectedEvent = events.find((e) => e.id === eventId);
+
+  const handleCategoryChange = (value: string) => {
+    setCategorySelection(value);
+    setCategoryError(null);
+
+    if (value === NEW_CATEGORY_VALUE) {
+      form.setValue("section", "");
+      form.setValue("category", "");
+      return;
+    }
+
+    const option = eventCategories.find((c) => c.key === value);
+    if (option) {
+      form.setValue("section", option.section);
+      form.setValue("category", option.category);
+    }
+  };
+
   const onSubmit = form.handleSubmit((data) => {
+    if (eventCategories.length > 0 && !categorySelection) {
+      setCategoryError("Sélectionnez une catégorie ou créez-en une nouvelle");
+      return;
+    }
+
+    if (isNewCategory && !data.category?.trim()) {
+      setCategoryError("Indiquez le nom de la catégorie");
+      return;
+    }
+
     addTicket(data);
-    form.reset();
+    form.reset(defaultFormValues);
+    setCategorySelection("");
+    setCategoryError(null);
     closeDialog();
   });
-
-  const selectedEvent = events.find((e) => e.id === form.watch("eventId"));
 
   return (
     <Dialog open={activeDialog === "ticket"} onOpenChange={(o) => !o && closeDialog()}>
@@ -81,11 +161,20 @@ export function TicketFormDialog() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
-          <FormRow>
+          {lockedEventId && selectedEvent ? (
+            <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Événement</p>
+              <p className="text-sm font-medium">{selectedEvent.name}</p>
+            </div>
+          ) : (
             <FormField label="Événement" error={form.formState.errors.eventId?.message} required>
               <Select
-                value={form.watch("eventId")}
-                onValueChange={(v) => form.setValue("eventId", v)}
+                value={eventId}
+                onValueChange={(v) => {
+                  form.setValue("eventId", v);
+                  setCategorySelection("");
+                  setCategoryError(null);
+                }}
               >
                 <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                 <SelectContent>
@@ -95,6 +184,9 @@ export function TicketFormDialog() {
                 </SelectContent>
               </Select>
             </FormField>
+          )}
+
+          <FormRow>
             <FormField label="Fournisseur">
               <Select
                 value={form.watch("supplierId") ?? ""}
@@ -110,13 +202,95 @@ export function TicketFormDialog() {
             </FormField>
           </FormRow>
 
+          {eventId ? (
+            <div className="space-y-3">
+              {eventCategories.length > 0 ? (
+                <FormField
+                  label="Catégorie"
+                  error={categoryError ?? undefined}
+                  required
+                >
+                  <Select value={categorySelection} onValueChange={handleCategoryChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une catégorie..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {eventCategories.map((option) => (
+                        <SelectItem key={option.key} value={option.key}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value={NEW_CATEGORY_VALUE}>+ Nouvelle catégorie...</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormField>
+              ) : null}
+
+              {isNewCategory ? (
+                <FormRow cols={2}>
+                  <FormField label="Section">
+                    <Input {...form.register("section")} placeholder="Pelouse Or, Tribune Nord..." />
+                  </FormField>
+                  <FormField
+                    label="Nom de catégorie"
+                    error={categoryError ?? undefined}
+                    required
+                  >
+                    <Input
+                      {...form.register("category", {
+                        onChange: () => setCategoryError(null),
+                      })}
+                      placeholder="Gold, Cat 1..."
+                    />
+                  </FormField>
+                </FormRow>
+              ) : selectedCategory ? (
+                <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Catégorie sélectionnée</p>
+                  <p className="text-sm font-medium">{selectedCategory.label}</p>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Sélectionnez un événement pour choisir ou créer une catégorie.
+            </p>
+          )}
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border/60 bg-muted/10 p-3">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 rounded border-border"
+              checked={seatsPending}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                form.setValue("seatsPending", checked);
+                if (checked) {
+                  form.setValue("row", "");
+                  form.setValue("seats", "");
+                }
+              }}
+            />
+            <span>
+              <span className="text-sm font-medium">Places à attribuer plus tard</span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                Achat en gros — vous connaissez la catégorie mais pas encore les places exactes. Vous pourrez vendre et facturer dès maintenant.
+              </span>
+            </span>
+          </label>
+
+          {!seatsPending && (
+            <FormRow cols={2}>
+              <FormField label="Rang">
+                <Input {...form.register("row")} placeholder="12, A..." />
+              </FormField>
+              <FormField label="Sièges">
+                <Input {...form.register("seats")} placeholder="12-14" />
+              </FormField>
+            </FormRow>
+          )}
+
           <FormRow cols={3}>
-            <FormField label="Section">
-              <Input {...form.register("section")} placeholder="Tribune Nord" />
-            </FormField>
-            <FormField label="Catégorie">
-              <Input {...form.register("category")} placeholder="Gold, Cat 1..." />
-            </FormField>
             <FormField label="Type billet">
               <Select
                 value={form.watch("ticketType")}
@@ -132,13 +306,7 @@ export function TicketFormDialog() {
             </FormField>
           </FormRow>
 
-          <FormRow cols={3}>
-            <FormField label="Rang">
-              <Input {...form.register("row")} />
-            </FormField>
-            <FormField label="Sièges">
-              <Input {...form.register("seats")} placeholder="12-14" />
-            </FormField>
+          <FormRow cols={2}>
             <FormField label="Quantité" required>
               <Input type="number" min={1} {...form.register("quantity")} />
             </FormField>
@@ -178,9 +346,17 @@ export function TicketFormDialog() {
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Financials — Vente cible</p>
             <FormRow>
-              <FormField label="Prix de vente cible">
+              <FormField
+                label="Prix minimum (unitaire)"
+                error={form.formState.errors.minimumSalePrice?.message}
+              >
+                <Input type="number" min={0} step={0.01} {...form.register("minimumSalePrice")} />
+              </FormField>
+              <FormField label="Prix de vente cible (unitaire)">
                 <Input type="number" min={0} step={0.01} {...form.register("targetSalePrice")} />
               </FormField>
+            </FormRow>
+            <FormRow>
               <FormField label="Statut stock">
                 <Select
                   value={form.watch("stockStatus")}

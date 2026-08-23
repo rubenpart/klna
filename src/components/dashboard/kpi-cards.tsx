@@ -38,7 +38,7 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       icon: TrendingUp,
       trend: "+12.4%",
       trendUp: true,
-      accent: "text-emerald-400",
+      accent: "text-emerald-600",
     },
     {
       title: "Marge Brute",
@@ -47,7 +47,7 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       icon: Percent,
       trend: "+3.2pts",
       trendUp: true,
-      accent: "text-blue-400",
+      accent: "text-blue-600",
     },
     {
       title: "Valeur du Stock",
@@ -65,7 +65,7 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       icon: Ticket,
       trend: `${formatNumber((kpis.ticketsSold / (kpis.ticketsInStock + kpis.ticketsSold)) * 100, 0)}% écoulés`,
       trendUp: true,
-      accent: "text-amber-400",
+      accent: "text-amber-600",
     },
   ];
 
@@ -91,7 +91,7 @@ export function KpiCards({ kpis }: KpiCardsProps) {
                 <p className="text-xs text-muted-foreground">{card.sub}</p>
                 <span
                   className={`inline-flex items-center gap-0.5 text-xs font-medium ${
-                    card.trendUp ? "text-emerald-400" : "text-red-400"
+                    card.trendUp ? "text-emerald-600" : "text-red-600"
                   }`}
                 >
                   {card.trendUp ? (

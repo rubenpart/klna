@@ -4,8 +4,10 @@
  */
 import { SEED_TIMESTAMPS } from "./ids";
 import type {
+  SeedBusinessBringer,
   SeedClient,
   SeedEvent,
+  SeedSeller,
   SeedSupplier,
   SeedTicket,
   SeedTicketAttachment,
@@ -82,6 +84,8 @@ export interface BulkSeedSlice {
   events: SeedEvent[];
   suppliers: SeedSupplier[];
   clients: SeedClient[];
+  businessBringers: SeedBusinessBringer[];
+  sellers: SeedSeller[];
   ticketBatches: SeedTicketBatch[];
   tickets: SeedTicket[];
   ticketAttachments: SeedTicketAttachment[];
@@ -92,7 +96,9 @@ export function generateBulkSeed(
   coreEventIds: string[],
   coreSupplierIds: string[],
   coreClientIds: string[],
-  coreTicketIds: string[]
+  coreTicketIds: string[],
+  coreBringerIds: string[],
+  coreSellerIds: string[]
 ): BulkSeedSlice {
   const startEvt = 9;
   const events: SeedEvent[] = BULK_EVENTS.map((e, i) => ({
@@ -169,6 +175,7 @@ export function generateBulkSeed(
       stockStatus,
       transferStatus: isSold ? pick(["READY_TO_SEND", "SENT_TO_CLIENT"], i) : pick(TRANSFER_STATUSES, i),
       targetSalePrice: targetPrice,
+      minimumSalePrice: Math.round(targetPrice * 0.85),
       actualSalePrice: actualPrice,
       resaleFees: isSold ? Math.round((actualPrice ?? 0) * 0.05) : 0,
       resalePlatform: isSold ? pick(PLATFORMS, i) : null,
@@ -196,9 +203,13 @@ export function generateBulkSeed(
         id: id("txn", txnIdx++),
         ticketId,
         clientId,
+        businessBringerId: i % 3 === 0 ? pick(coreBringerIds, i) : null,
+        businessBringerCommissionRate: i % 3 === 0 ? 5 + (i % 6) : null,
+        sellerId: i % 2 === 0 ? pick(coreSellerIds, i + 1) : null,
         saleDate: `2026-02-${String(1 + (i % 19)).padStart(2, "0")}T${String(10 + (i % 8)).padStart(2, "0")}:00:00.000Z`,
         negotiatedPrice: (actualPrice ?? targetPrice) * (i % 4 === 0 ? 2 : 1),
         currency,
+        soldQuantity: i % 4 === 0 ? 2 : 1,
         paymentStatus: pick(PAYMENT_STATUSES, i),
         paymentMethod: pick(PAYMENT_METHODS, i),
         deliveryStatus: isSold ? pick(DELIVERY_STATUSES, i) : "TO_DELIVER",
@@ -222,7 +233,7 @@ export function generateBulkSeed(
       purchaseUnitPrice: 240, purchaseFees: 15, purchaseCurrency: "EUR",
       purchaseDate: "2026-01-18T10:00:00.000Z",
       stockStatus: "SOLD", transferStatus: "SENT_TO_CLIENT",
-      targetSalePrice: 380, actualSalePrice: 395, resaleFees: 20,
+      targetSalePrice: 380, minimumSalePrice: 323, actualSalePrice: 395, resaleFees: 20,
       resalePlatform: "WHATSAPP", saleCurrency: "EUR", notes: null, createdAt, updatedAt,
     },
     {
@@ -235,7 +246,7 @@ export function generateBulkSeed(
       purchaseUnitPrice: 340, purchaseFees: 22, purchaseCurrency: "EUR",
       purchaseDate: "2026-01-25T09:00:00.000Z",
       stockStatus: "RESERVED", transferStatus: "IN_STOCK",
-      targetSalePrice: 520, actualSalePrice: null, resaleFees: 0,
+      targetSalePrice: 520, minimumSalePrice: 442, actualSalePrice: null, resaleFees: 0,
       resalePlatform: null, saleCurrency: "EUR", notes: "Réservé Isabelle Mercier", createdAt, updatedAt,
     },
     {
@@ -248,7 +259,7 @@ export function generateBulkSeed(
       purchaseUnitPrice: 8000, purchaseFees: 200, purchaseCurrency: "AED",
       purchaseDate: "2026-02-03T14:00:00.000Z",
       stockStatus: "IN_STOCK", transferStatus: "IN_STOCK",
-      targetSalePrice: 12000, actualSalePrice: null, resaleFees: 600,
+      targetSalePrice: 12000, minimumSalePrice: 10200, actualSalePrice: null, resaleFees: 600,
       resalePlatform: "DIRECT_CLIENT", saleCurrency: "AED", notes: null, createdAt, updatedAt,
     },
   ];
@@ -263,6 +274,7 @@ export function generateBulkSeed(
       saleDate: "2026-02-12T14:00:00.000Z",
       negotiatedPrice: 790,
       currency: "EUR",
+      soldQuantity: 2,
       paymentStatus: "PAID",
       paymentMethod: "BANK_TRANSFER",
       deliveryStatus: "TRANSFER_COMPLETED",
@@ -278,6 +290,7 @@ export function generateBulkSeed(
       saleDate: "2026-02-15T11:00:00.000Z",
       negotiatedPrice: 520,
       currency: "EUR",
+      soldQuantity: 1,
       paymentStatus: "DEPOSIT",
       paymentMethod: "CARD",
       deliveryStatus: "TO_DELIVER",
@@ -288,5 +301,15 @@ export function generateBulkSeed(
     }
   );
 
-  return { events, suppliers, clients, ticketBatches, tickets, ticketAttachments, transactions };
+  return {
+    events,
+    suppliers,
+    clients,
+    businessBringers: [],
+    sellers: [],
+    ticketBatches,
+    tickets,
+    ticketAttachments,
+    transactions,
+  };
 }

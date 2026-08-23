@@ -1,9 +1,13 @@
 import { calculateMargin } from "@/lib/margin";
+import { getTicketAvailableQuantity, getTicketSoldQuantity } from "@/lib/ticket-stock";
+import { getAppNow, getDemoNow } from "@/lib/demo-time";
 import { hoursUntil } from "@/lib/utils";
 import type {
+  BusinessBringer,
   Client,
   DashboardKPIs,
   Event,
+  Seller,
   Supplier,
   Ticket,
   TicketAttachment,
@@ -17,13 +21,16 @@ export interface HydratedDatabase {
   events: Event[];
   suppliers: Supplier[];
   clients: Client[];
+  businessBringers: BusinessBringer[];
+  sellers: Seller[];
   tickets: Ticket[];
   transactions: Transaction[];
 }
 
 function resolveEventDateTime(seed: SeedEvent): string {
   if (seed.demoOffsetHours != null) {
-    return new Date(Date.now() + seed.demoOffsetHours * 60 * 60 * 1000).toISOString();
+    const base = getDemoNow();
+    return new Date(base.getTime() + seed.demoOffsetHours * 60 * 60 * 1000).toISOString();
   }
   return seed.dateTime;
 }
@@ -61,6 +68,34 @@ function toClient(seed: (typeof SEED_DATABASE.clients)[0]): Client {
     creditBalance: seed.creditBalance,
     creditCurrency: seed.creditCurrency,
     seatPreferences: seed.seatPreferences ?? undefined,
+    notes: seed.notes ?? undefined,
+  };
+}
+
+function toBusinessBringer(seed: (typeof SEED_DATABASE.businessBringers)[0]): BusinessBringer {
+  return {
+    id: seed.id,
+    firstName: seed.firstName,
+    lastName: seed.lastName,
+    email: seed.email ?? undefined,
+    phone: seed.phone ?? undefined,
+    company: seed.company ?? undefined,
+    commissionRate: seed.commissionRate,
+    status: seed.status,
+    notes: seed.notes ?? undefined,
+  };
+}
+
+function toSeller(seed: (typeof SEED_DATABASE.sellers)[0]): Seller {
+  return {
+    id: seed.id,
+    firstName: seed.firstName,
+    lastName: seed.lastName,
+    email: seed.email ?? undefined,
+    phone: seed.phone ?? undefined,
+    role: seed.role ?? undefined,
+    status: seed.status,
+    notes: seed.notes ?? undefined,
   };
 }
 
@@ -79,10 +114,14 @@ export function hydrateSeedData(): HydratedDatabase {
   const events = SEED_DATABASE.events.map(toEvent);
   const suppliers = SEED_DATABASE.suppliers.map(toSupplier);
   const clients = SEED_DATABASE.clients.map(toClient);
+  const businessBringers = SEED_DATABASE.businessBringers.map(toBusinessBringer);
+  const sellers = SEED_DATABASE.sellers.map(toSeller);
 
   const eventMap = new Map(events.map((e) => [e.id, e]));
   const supplierMap = new Map(suppliers.map((s) => [s.id, s]));
   const clientMap = new Map(clients.map((c) => [c.id, c]));
+  const bringerMap = new Map(businessBringers.map((b) => [b.id, b]));
+  const sellerMap = new Map(sellers.map((s) => [s.id, s]));
 
   const attachmentsByTicket = SEED_DATABASE.ticketAttachments.reduce<
     Map<string, TicketAttachment[]>
@@ -102,6 +141,7 @@ export function hydrateSeedData(): HydratedDatabase {
     category: seed.category ?? undefined,
     row: seed.row ?? undefined,
     seats: seed.seats ?? undefined,
+    seatsPending: seed.seatsPending ?? false,
     ticketType: seed.ticketType,
     quantity: seed.quantity,
     purchaseUnitPrice: seed.purchaseUnitPrice,
@@ -111,6 +151,9 @@ export function hydrateSeedData(): HydratedDatabase {
     stockStatus: seed.stockStatus,
     transferStatus: seed.transferStatus,
     targetSalePrice: seed.targetSalePrice ?? undefined,
+    minimumSalePrice:
+      seed.minimumSalePrice ??
+      (seed.targetSalePrice ? Math.round(seed.targetSalePrice * 0.85) : undefined),
     actualSalePrice: seed.actualSalePrice ?? undefined,
     resaleFees: seed.resaleFees,
     resalePlatform: seed.resalePlatform ?? undefined,
@@ -127,6 +170,9 @@ export function hydrateSeedData(): HydratedDatabase {
     id: seed.id,
     ticketId: seed.ticketId,
     clientId: seed.clientId,
+    businessBringerId: seed.businessBringerId ?? undefined,
+    businessBringerCommissionRate: seed.businessBringerCommissionRate ?? undefined,
+    sellerId: seed.sellerId ?? undefined,
     saleDate: seed.saleDate,
     negotiatedPrice: seed.negotiatedPrice,
     currency: seed.currency,
@@ -134,8 +180,17 @@ export function hydrateSeedData(): HydratedDatabase {
     paymentMethod: seed.paymentMethod ?? undefined,
     deliveryStatus: seed.deliveryStatus,
     resalePlatform: seed.resalePlatform ?? undefined,
+    soldQuantity: seed.soldQuantity ?? 1,
+    seatsPending: seed.seatsPending ?? false,
+    assignedRow: seed.assignedRow ?? undefined,
+    assignedSeats: seed.assignedSeats ?? undefined,
+    invoice: seed.invoice ?? undefined,
     ticket: ticketMap.get(seed.ticketId),
     client: clientMap.get(seed.clientId),
+    businessBringer: seed.businessBringerId
+      ? bringerMap.get(seed.businessBringerId)
+      : undefined,
+    seller: seed.sellerId ? sellerMap.get(seed.sellerId) : undefined,
   }));
 
   for (const client of clients) {
@@ -160,35 +215,36 @@ export function hydrateSeedData(): HydratedDatabase {
     }, 0);
   }
 
-  return { events, suppliers, clients, tickets, transactions };
+  return { events, suppliers, clients, businessBringers, sellers, tickets, transactions };
 }
 
-export function computeKPIs(tickets: Ticket[], transactions?: Transaction[]): DashboardKPIs {
-  const soldTickets = tickets.filter((t) => t.stockStatus === "SOLD" && t.actualSalePrice);
+export function computeKPIs(tickets: Ticket[], transactions: Transaction[] = []): DashboardKPIs {
+  const totalRevenue = transactions
+    .filter((t) => t.paymentStatus !== "PENDING")
+    .reduce((sum, t) => sum + t.negotiatedPrice, 0);
 
-  const totalRevenue = soldTickets.reduce(
-    (sum, t) => sum + (t.actualSalePrice ?? 0) * t.quantity,
-    0
-  );
-
-  const margins = soldTickets.map((t) =>
-    calculateMargin({
-      purchaseUnitPrice: t.purchaseUnitPrice,
-      purchaseFees: t.purchaseFees,
-      quantity: t.quantity,
-      purchaseCurrency: t.purchaseCurrency,
-      saleUnitPrice: t.actualSalePrice ?? 0,
-      resaleFees: t.resaleFees,
-      saleCurrency: t.saleCurrency,
-    })
-  );
+  const soldTxns = transactions.filter((t) => t.paymentStatus !== "PENDING");
+  const margins = soldTxns.map((txn) => {
+    const ticket = tickets.find((t) => t.id === txn.ticketId);
+    if (!ticket) return { netMargin: txn.negotiatedPrice * 0.25, marginRate: 25 };
+    const qty = txn.soldQuantity ?? 1;
+    return calculateMargin({
+      purchaseUnitPrice: ticket.purchaseUnitPrice,
+      purchaseFees: ticket.purchaseFees * (qty / ticket.quantity),
+      quantity: qty,
+      purchaseCurrency: ticket.purchaseCurrency,
+      saleUnitPrice: txn.negotiatedPrice / qty,
+      resaleFees: ticket.resaleFees * (qty / ticket.quantity),
+      saleCurrency: txn.currency,
+    });
+  });
 
   const totalGrossMargin = margins.reduce((sum, m) => sum + m.netMargin, 0);
   const averageMarginRate =
     margins.length > 0 ? margins.reduce((sum, m) => sum + m.marginRate, 0) / margins.length : 0;
 
-  const now = new Date();
-  const monthlyRevenue = (transactions ?? [])
+  const now = getAppNow();
+  const monthlyRevenue = transactions
     .filter((t) => {
       if (t.paymentStatus === "PENDING") return false;
       const d = new Date(t.saleDate);
@@ -196,15 +252,16 @@ export function computeKPIs(tickets: Ticket[], transactions?: Transaction[]): Da
     })
     .reduce((sum, t) => sum + t.negotiatedPrice, 0);
 
-  const inStock = tickets.filter(
-    (t) => t.stockStatus === "IN_STOCK" || t.stockStatus === "RESERVED"
+  const sellableTickets = tickets.filter(
+    (t) => getTicketAvailableQuantity(t, transactions) > 0
   );
 
-  const stockInvestment = inStock.reduce((sum, t) => {
+  const stockInvestment = sellableTickets.reduce((sum, t) => {
+    const available = getTicketAvailableQuantity(t, transactions);
     const m = calculateMargin({
       purchaseUnitPrice: t.purchaseUnitPrice,
-      purchaseFees: t.purchaseFees,
-      quantity: t.quantity,
+      purchaseFees: t.purchaseFees * (available / t.quantity),
+      quantity: available,
       purchaseCurrency: t.purchaseCurrency,
       saleUnitPrice: 0,
       resaleFees: 0,
@@ -213,14 +270,15 @@ export function computeKPIs(tickets: Ticket[], transactions?: Transaction[]): Da
     return sum + m.totalPurchaseEur;
   }, 0);
 
-  const stockEstimatedValue = inStock.reduce((sum, t) => {
+  const stockEstimatedValue = sellableTickets.reduce((sum, t) => {
+    const available = getTicketAvailableQuantity(t, transactions);
     const m = calculateMargin({
       purchaseUnitPrice: t.purchaseUnitPrice,
-      purchaseFees: t.purchaseFees,
-      quantity: t.quantity,
+      purchaseFees: t.purchaseFees * (available / t.quantity),
+      quantity: available,
       purchaseCurrency: t.purchaseCurrency,
       saleUnitPrice: t.targetSalePrice ?? 0,
-      resaleFees: t.resaleFees,
+      resaleFees: t.resaleFees * (available / t.quantity),
       saleCurrency: t.saleCurrency,
     });
     return sum + m.totalSaleEur;
@@ -233,8 +291,11 @@ export function computeKPIs(tickets: Ticket[], transactions?: Transaction[]): Da
     averageMarginRate,
     stockInvestment,
     stockEstimatedValue,
-    ticketsInStock: inStock.reduce((sum, t) => sum + t.quantity, 0),
-    ticketsSold: soldTickets.reduce((sum, t) => sum + t.quantity, 0),
+    ticketsInStock: sellableTickets.reduce(
+      (sum, t) => sum + getTicketAvailableQuantity(t, transactions),
+      0
+    ),
+    ticketsSold: transactions.reduce((sum, t) => sum + (t.soldQuantity ?? 1), 0),
   };
 }
 
@@ -255,7 +316,6 @@ export function getUrgentDeliveries(
 
     const hrs = hoursUntil(event.dateTime);
     if (hrs > 48 || hrs < 0) continue;
-    if (ticket.stockStatus !== "SOLD") continue;
 
     urgent.push({
       ticket,
@@ -276,35 +336,43 @@ export interface EventWithStats extends Event {
   totalMargin: number;
 }
 
-export function computeEventStats(events: Event[], tickets: Ticket[]): EventWithStats[] {
+export function computeEventStats(
+  events: Event[],
+  tickets: Ticket[],
+  transactions: Transaction[] = []
+): EventWithStats[] {
   return events.map((event) => {
     const eventTickets = tickets.filter((t) => t.eventId === event.id);
-    const sold = eventTickets.filter((t) => t.stockStatus === "SOLD");
-    const inStock = eventTickets.filter(
-      (t) => t.stockStatus === "IN_STOCK" || t.stockStatus === "RESERVED"
-    );
 
-    const totalMargin = sold.reduce((sum, t) => {
-      if (!t.actualSalePrice) return sum;
-      return (
-        sum +
-        calculateMargin({
-          purchaseUnitPrice: t.purchaseUnitPrice,
-          purchaseFees: t.purchaseFees,
-          quantity: t.quantity,
-          purchaseCurrency: t.purchaseCurrency,
-          saleUnitPrice: t.actualSalePrice,
-          resaleFees: t.resaleFees,
-          saleCurrency: t.saleCurrency,
-        }).netMargin
-      );
-    }, 0);
+    let inStock = 0;
+    let sold = 0;
+    let totalMargin = 0;
+
+    for (const ticket of eventTickets) {
+      inStock += getTicketAvailableQuantity(ticket, transactions);
+      sold += getTicketSoldQuantity(ticket.id, transactions);
+    }
+
+    for (const txn of transactions) {
+      const ticket = eventTickets.find((t) => t.id === txn.ticketId);
+      if (!ticket || txn.paymentStatus === "PENDING") continue;
+      const qty = txn.soldQuantity ?? 1;
+      totalMargin += calculateMargin({
+        purchaseUnitPrice: ticket.purchaseUnitPrice,
+        purchaseFees: ticket.purchaseFees * (qty / ticket.quantity),
+        quantity: qty,
+        purchaseCurrency: ticket.purchaseCurrency,
+        saleUnitPrice: txn.negotiatedPrice / qty,
+        resaleFees: ticket.resaleFees * (qty / ticket.quantity),
+        saleCurrency: txn.currency,
+      }).netMargin;
+    }
 
     return {
       ...event,
       ticketCount: eventTickets.reduce((s, t) => s + t.quantity, 0),
-      inStock: inStock.reduce((s, t) => s + t.quantity, 0),
-      sold: sold.reduce((s, t) => s + t.quantity, 0),
+      inStock,
+      sold,
       totalMargin,
     };
   });

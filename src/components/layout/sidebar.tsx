@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  Handshake,
   LayoutDashboard,
-  Package,
   Ticket,
+  UserCheck,
   Users,
   Zap,
 } from "lucide-react";
@@ -14,21 +15,28 @@ import { cn } from "@/lib/utils";
 
 export const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/inventory", label: "Inventaire", icon: Package },
   { href: "/events", label: "Événements", icon: Ticket },
   { href: "/clients", label: "Clients", icon: Users },
+  { href: "/apporteurs", label: "Apporteurs", icon: Handshake },
+  { href: "/vendeurs", label: "Vendeurs", icon: UserCheck },
   { href: "/sales", label: "Ventes", icon: Zap },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 export const mobileNavItems = [
   { href: "/", label: "Accueil", icon: LayoutDashboard },
-  { href: "/inventory", label: "Stock", icon: Package },
   { href: "/events", label: "Events", icon: Ticket },
   { href: "/clients", label: "Clients", icon: Users },
+  { href: "/apporteurs", label: "Apport.", icon: Handshake },
+  { href: "/vendeurs", label: "Vendeurs", icon: UserCheck },
   { href: "/sales", label: "Ventes", icon: Zap },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/analytics", label: "Stats", icon: BarChart3 },
 ];
+
+function isNavActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 interface SidebarProps {
   className?: string;
@@ -51,7 +59,7 @@ export function SidebarNav({ className }: SidebarProps) {
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = isNavActive(pathname, item.href);
           return (
             <Link
               key={item.href}
@@ -77,7 +85,7 @@ export function Sidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        "hidden h-full w-56 shrink-0 flex-col border-r border-border/60 bg-card/30 lg:flex",
+        "hidden h-full w-56 shrink-0 flex-col border-r border-border/60 bg-muted/30 lg:flex",
         className
       )}
     >
@@ -93,7 +101,7 @@ export function MobileTopNav() {
     <nav className="shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md lg:hidden">
       <div className="flex gap-1 overflow-x-auto px-2 py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {mobileNavItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = isNavActive(pathname, item.href);
 
           return (
             <Link

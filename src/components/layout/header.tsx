@@ -1,18 +1,15 @@
 "use client";
 
-import { Bell, Plus, Search } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useCrmStore } from "@/stores/crm-store";
 
 interface HeaderProps {
   urgentCount?: number;
 }
 
 export function Header({ urgentCount = 0 }: HeaderProps) {
-  const openDialog = useCrmStore((s) => s.openDialog);
-
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-background/80 px-3 backdrop-blur-sm sm:px-4 lg:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -46,15 +43,6 @@ export function Header({ urgentCount = 0 }: HeaderProps) {
           {urgentCount > 0 && (
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 animate-pulse" />
           )}
-        </Button>
-        <Button
-          size="sm"
-          className="h-10 gap-1.5 px-2 sm:px-3"
-          onClick={() => openDialog("sale")}
-        >
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Vente Express</span>
-          <span className="sr-only sm:hidden">Vente Express</span>
         </Button>
       </div>
     </header>

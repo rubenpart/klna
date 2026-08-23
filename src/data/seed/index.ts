@@ -1,5 +1,7 @@
+import { seedBusinessBringers } from "./business-bringers";
 import { seedClients } from "./clients";
 import { seedEvents } from "./events";
+import { seedSellers } from "./sellers";
 import { seedSuppliers } from "./suppliers";
 import { seedTicketAttachments } from "./attachments";
 import { seedTicketBatches } from "./ticket-batches";
@@ -12,7 +14,9 @@ const bulk = generateBulkSeed(
   seedEvents.map((e) => e.id),
   seedSuppliers.map((s) => s.id),
   seedClients.map((c) => c.id),
-  seedTickets.map((t) => t.id)
+  seedTickets.map((t) => t.id),
+  seedBusinessBringers.map((b) => b.id),
+  seedSellers.map((s) => s.id)
 );
 
 /**
@@ -23,6 +27,8 @@ export const SEED_DATABASE: SeedDatabase = {
   events: [...seedEvents, ...bulk.events],
   suppliers: [...seedSuppliers, ...bulk.suppliers],
   clients: [...seedClients, ...bulk.clients],
+  businessBringers: [...seedBusinessBringers, ...bulk.businessBringers],
+  sellers: [...seedSellers, ...bulk.sellers],
   ticketBatches: [...seedTicketBatches, ...bulk.ticketBatches],
   tickets: [...seedTickets, ...bulk.tickets],
   ticketAttachments: [...seedTicketAttachments, ...bulk.ticketAttachments],
@@ -44,6 +50,8 @@ export const SEED_INSERT_ORDER = [
   "events",
   "suppliers",
   "clients",
+  "businessBringers",
+  "sellers",
   "ticketBatches",
   "tickets",
   "ticketAttachments",
@@ -55,6 +63,8 @@ export function getSeedStats() {
     events: SEED_DATABASE.events.length,
     suppliers: SEED_DATABASE.suppliers.length,
     clients: SEED_DATABASE.clients.length,
+    businessBringers: SEED_DATABASE.businessBringers.length,
+    sellers: SEED_DATABASE.sellers.length,
     ticketBatches: SEED_DATABASE.ticketBatches.length,
     tickets: SEED_DATABASE.tickets.length,
     ticketAttachments: SEED_DATABASE.ticketAttachments.length,

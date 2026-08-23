@@ -48,10 +48,10 @@ export function TopEventsChart({ data }: TopEventsChartProps) {
         <div className="h-[220px] sm:h-[240px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 0, right: 0, left: -12, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="name"
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
               tickLine={false}
               axisLine={false}
               interval={0}
@@ -60,12 +60,12 @@ export function TopEventsChart({ data }: TopEventsChartProps) {
               height={50}
             />
             <YAxis
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted)/30)" }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--muted)" }} />
             <Bar dataKey="revenue" fill="hsl(217 91% 60% / 0.6)" radius={[3, 3, 0, 0]} name="revenue" />
             <Bar dataKey="margin" fill="hsl(142 76% 46% / 0.8)" radius={[3, 3, 0, 0]} name="margin" />
           </BarChart>

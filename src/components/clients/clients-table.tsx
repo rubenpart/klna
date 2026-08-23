@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   type ColumnDef,
   type SortingState,
@@ -92,7 +93,10 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
           </Button>
         ),
         cell: ({ row }) => (
-          <div className="flex items-center gap-2">
+          <Link
+            href={`/clients/${row.original.id}`}
+            className="flex items-center gap-2 transition-colors hover:text-primary"
+          >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
               {row.original.firstName[0]}{row.original.lastName[0]}
             </div>
@@ -102,7 +106,7 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
                 {row.original.email && <span className="flex items-center gap-0.5"><Mail className="h-3 w-3" />{row.original.email}</span>}
               </div>
             </div>
-          </div>
+          </Link>
         ),
       },
       {
@@ -148,7 +152,7 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
         accessorKey: "totalMarginGenerated",
         header: "Marge générée",
         cell: ({ row }) => (
-          <span className="font-mono text-xs tabular-nums text-emerald-400">
+          <span className="font-mono text-xs tabular-nums text-emerald-600">
             {formatCurrency(row.original.totalMarginGenerated ?? 0, "EUR")}
           </span>
         ),
@@ -235,7 +239,7 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
         <Card className="border-border/60 bg-card/50">
           <CardContent className="p-4">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Marge clients</p>
-            <p className="text-2xl font-bold tabular-nums text-emerald-400">
+            <p className="text-2xl font-bold tabular-nums text-emerald-600">
               {formatCurrency(clients.reduce((s, c) => s + (c.totalMarginGenerated ?? 0), 0), "EUR")}
             </p>
           </CardContent>
@@ -244,8 +248,9 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
 
       <div className="space-y-3 lg:hidden">
         {filtered.map((client) => (
-          <Card key={client.id} className="border-border/60 bg-card/50">
-            <CardContent className="space-y-2 p-4">
+          <Link key={client.id} href={`/clients/${client.id}`}>
+            <Card className="border-border/60 bg-card/50 transition-colors hover:border-primary/30 hover:bg-muted/20">
+              <CardContent className="space-y-2 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-medium">
@@ -259,12 +264,13 @@ export function ClientsTable({ clients, transactionCountByClient }: ClientsTable
               </div>
               <div className="flex flex-wrap justify-between gap-2 text-xs">
                 <span>LTV {formatCurrency(client.totalSpent ?? 0, "EUR")}</span>
-                <span className="text-emerald-400">
+                <span className="text-emerald-600">
                   Marge {formatCurrency(client.totalMarginGenerated ?? 0, "EUR")}
                 </span>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+          </Link>
         ))}
       </div>
 

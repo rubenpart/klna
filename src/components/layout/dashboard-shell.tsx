@@ -2,6 +2,7 @@
 
 import { FormDialogs } from "@/components/forms/form-dialogs";
 import { Header } from "@/components/layout/header";
+import { LiveClockSync } from "@/components/layout/live-clock-sync";
 import { MobileTopNav, Sidebar } from "@/components/layout/sidebar";
 import { useCrmStore } from "@/stores/crm-store";
 
@@ -21,6 +22,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <FormDialogs />
+      <LiveClockSync />
     </div>
   );
 }

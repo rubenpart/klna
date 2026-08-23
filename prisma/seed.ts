@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { SEED_DATABASE } from "../src/data/seed";
 
 const prisma = new PrismaClient();
@@ -26,6 +26,8 @@ async function main() {
   await prisma.ticket.deleteMany();
   await prisma.ticketBatch.deleteMany();
   await prisma.client.deleteMany();
+  await prisma.seller.deleteMany();
+  await prisma.businessBringer.deleteMany();
   await prisma.supplier.deleteMany();
   await prisma.event.deleteMany();
 
@@ -46,6 +48,22 @@ async function main() {
       ...c,
       createdAt: toDate(c.createdAt),
       updatedAt: toDate(c.updatedAt),
+    })),
+  });
+
+  const businessBringers = await prisma.businessBringer.createMany({
+    data: SEED_DATABASE.businessBringers.map((b) => ({
+      ...b,
+      createdAt: toDate(b.createdAt),
+      updatedAt: toDate(b.updatedAt),
+    })),
+  });
+
+  const sellers = await prisma.seller.createMany({
+    data: SEED_DATABASE.sellers.map((s) => ({
+      ...s,
+      createdAt: toDate(s.createdAt),
+      updatedAt: toDate(s.updatedAt),
     })),
   });
 
@@ -75,17 +93,23 @@ async function main() {
   });
 
   const transactions = await prisma.transaction.createMany({
-    data: SEED_DATABASE.transactions.map((t) => ({
-      ...t,
-      saleDate: toDate(t.saleDate),
-      createdAt: toDate(t.createdAt),
-      updatedAt: toDate(t.updatedAt),
-    })),
+    data: SEED_DATABASE.transactions.map((t) => {
+      const { invoice, ...rest } = t;
+      return {
+        ...rest,
+        invoice: invoice ? (invoice as unknown as Prisma.InputJsonValue) : undefined,
+        saleDate: toDate(t.saleDate),
+        createdAt: toDate(t.createdAt),
+        updatedAt: toDate(t.updatedAt),
+      };
+    }),
   });
 
   console.log(`  ✓ ${events.count} events`);
   console.log(`  ✓ ${suppliers.count} suppliers`);
   console.log(`  ✓ ${clients.count} clients`);
+  console.log(`  ✓ ${businessBringers.count} business bringers`);
+  console.log(`  ✓ ${sellers.count} sellers`);
   console.log(`  ✓ ${ticketBatches.count} ticket batches`);
   console.log(`  ✓ ${tickets.count} tickets`);
   console.log(`  ✓ ${attachments.count} attachments`);

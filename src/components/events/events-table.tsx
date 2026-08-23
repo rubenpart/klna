@@ -8,7 +8,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Calendar, MapPin, Plus, Search, Ticket } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowUpDown, Calendar, ChevronRight, MapPin, Plus, Search, Ticket } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +55,7 @@ const statusLabel: Record<string, string> = {
 };
 
 export function EventsTable({ events }: EventsTableProps) {
+  const router = useRouter();
   const openDialog = useCrmStore((s) => s.openDialog);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [search, setSearch] = useState("");
@@ -85,13 +88,16 @@ export function EventsTable({ events }: EventsTableProps) {
           </Button>
         ),
         cell: ({ row }) => (
-          <div>
-            <p className="max-w-[220px] truncate font-medium">{row.original.name}</p>
+          <Link
+            href={`/events/${row.original.id}`}
+            className="group block max-w-[220px]"
+          >
+            <p className="truncate font-medium group-hover:text-primary">{row.original.name}</p>
             <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
               <MapPin className="h-3 w-3" />
               {row.original.venue}, {row.original.city}
             </p>
-          </div>
+          </Link>
         ),
       },
       {
@@ -122,7 +128,7 @@ export function EventsTable({ events }: EventsTableProps) {
           <div className="flex items-center gap-2 text-xs">
             <Ticket className="h-3 w-3 text-muted-foreground" />
             <span className="font-mono tabular-nums">
-              <span className="text-emerald-400">{row.original.inStock}</span>
+              <span className="text-emerald-600">{row.original.inStock}</span>
               {" / "}
               <span className="text-muted-foreground">{row.original.ticketCount}</span>
             </span>
@@ -139,7 +145,7 @@ export function EventsTable({ events }: EventsTableProps) {
         header: "Marge",
         cell: ({ row }) =>
           row.original.totalMargin > 0 ? (
-            <span className="font-mono text-xs tabular-nums text-emerald-400">
+            <span className="font-mono text-xs tabular-nums text-emerald-600">
               {formatCurrency(row.original.totalMargin, "EUR")}
             </span>
           ) : (
@@ -150,26 +156,28 @@ export function EventsTable({ events }: EventsTableProps) {
         accessorKey: "status",
         header: "Statut",
         cell: ({ row }) => (
-          <div className="flex items-center gap-1">
-            <Badge variant={statusVariant[row.original.status]} className="text-[10px]">
-              {statusLabel[row.original.status]}
-            </Badge>
-            {row.original.status === "UPCOMING" && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                title="Ajouter un billet"
-                onClick={() => openDialog("ticket", { eventId: row.original.id })}
-              >
-                <Plus className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </div>
+          <Badge variant={statusVariant[row.original.status]} className="text-[10px]">
+            {statusLabel[row.original.status]}
+          </Badge>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            title="Voir l'inventaire"
+            onClick={() => router.push(`/events/${row.original.id}`)}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         ),
       },
     ],
-    [openDialog]
+    [router]
   );
 
   const table = useReactTable({
@@ -238,39 +246,31 @@ export function EventsTable({ events }: EventsTableProps) {
 
       <div className="space-y-3 lg:hidden">
         {filtered.map((event) => (
-          <Card key={event.id} className="border-border/60 bg-card/50">
-            <CardContent className="space-y-2 p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="font-medium leading-snug">{event.name}</p>
-                  <p className="text-xs text-muted-foreground">{event.venue}, {event.city}</p>
+          <Link key={event.id} href={`/events/${event.id}`}>
+            <Card className="border-border/60 bg-card/50 transition-colors hover:border-primary/30">
+              <CardContent className="space-y-2 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium leading-snug">{event.name}</p>
+                    <p className="text-xs text-muted-foreground">{event.venue}, {event.city}</p>
+                  </div>
+                  <Badge variant={statusVariant[event.status]} className="shrink-0 text-[10px]">
+                    {statusLabel[event.status]}
+                  </Badge>
                 </div>
-                <Badge variant={statusVariant[event.status]} className="shrink-0 text-[10px]">
-                  {statusLabel[event.status]}
-                </Badge>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                <Badge variant="outline">{EVENT_CATEGORY_LABELS[event.category]}</Badge>
-                <span className="text-muted-foreground">{formatDateTime(event.dateTime)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs">
-                  <span className="text-emerald-400">{event.inStock}</span> en stock · {event.sold} vendus
-                </span>
-                {event.status === "UPCOMING" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-9"
-                    onClick={() => openDialog("ticket", { eventId: event.id })}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Billet
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <Badge variant="outline">{EVENT_CATEGORY_LABELS[event.category]}</Badge>
+                  <span className="text-muted-foreground">{formatDateTime(event.dateTime)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs">
+                    <span className="text-emerald-600">{event.inStock}</span> en stock · {event.sold} vendus
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
@@ -292,7 +292,11 @@ export function EventsTable({ events }: EventsTableProps) {
             <TableBody>
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/events/${row.original.id}`)}
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                     ))}

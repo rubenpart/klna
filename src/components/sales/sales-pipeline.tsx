@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   type ColumnDef,
   type SortingState,
@@ -8,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Package, Plus, Search, Send, Truck } from "lucide-react";
+import { ArrowUpDown, FileText, MapPin, Package, Search, Send, Truck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/currency";
+import { salePlacementLabel } from "@/lib/invoice";
 import { formatDateTime } from "@/lib/utils";
 import type { Transaction } from "@/types";
 import {
@@ -99,9 +101,12 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
         header: "Client",
         cell: ({ row }) => (
           <div>
-            <p className="text-sm font-medium">
+            <Link
+              href={`/clients/${row.original.clientId}`}
+              className="text-sm font-medium hover:text-primary"
+            >
               {row.original.client?.firstName} {row.original.client?.lastName}
-            </p>
+            </Link>
             <p className="max-w-[180px] truncate text-[10px] text-muted-foreground">
               {row.original.ticket?.event?.name}
             </p>
@@ -109,13 +114,59 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
         ),
       },
       {
+        id: "partners",
+        header: "Équipe",
+        cell: ({ row }) => (
+          <div className="space-y-0.5 text-[10px]">
+            {row.original.businessBringer && (
+              <p className="text-muted-foreground">
+                Apport. {row.original.businessBringer.firstName} {row.original.businessBringer.lastName}
+                {row.original.businessBringerCommissionRate != null && (
+                  <> · {row.original.businessBringerCommissionRate}%</>
+                )}
+              </p>
+            )}
+            {row.original.seller && (
+              <p>
+                Vendeur {row.original.seller.firstName} {row.original.seller.lastName}
+              </p>
+            )}
+            {!row.original.businessBringer && !row.original.seller && (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </div>
+        ),
+      },
+      {
         id: "placement",
         header: "Billet",
-        cell: ({ row }) => (
-          <span className="text-xs text-muted-foreground">
-            {row.original.ticket?.section} · {row.original.ticket?.seats}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const label = salePlacementLabel(row.original.ticket, row.original);
+          const pending = row.original.seatsPending && !row.original.assignedSeats;
+          return (
+            <div className="space-y-1">
+              <span className={pending ? "text-xs text-amber-700" : "text-xs text-muted-foreground"}>
+                {label}
+              </span>
+              {pending && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1 px-2 text-[10px]"
+                  onClick={() =>
+                    openDialog("assignSeats", {
+                      transactionId: row.original.id,
+                      assignMode: "sale",
+                    })
+                  }
+                >
+                  <MapPin className="h-3 w-3" />
+                  Attribuer
+                </Button>
+              )}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "negotiatedPrice",
@@ -153,8 +204,26 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
           </span>
         ),
       },
+      {
+        id: "invoice",
+        header: "Facture",
+        cell: ({ row }) =>
+          row.original.invoice ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1 px-2 text-xs"
+              onClick={() => openDialog("invoice", { transactionId: row.original.id })}
+            >
+              <FileText className="h-3.5 w-3.5" />
+              {row.original.invoice.number}
+            </Button>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
+          ),
+      },
     ],
-    []
+    [openDialog]
   );
 
   const table = useReactTable({
@@ -175,12 +244,6 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
       <PageHeader
         title="Pipeline de Vente"
         description={`${transactions.length} transactions · ${formatCurrency(totalRevenue, "EUR")} encaissé`}
-        actions={
-          <Button size="sm" className="h-10 gap-1.5" onClick={() => openDialog("sale")}>
-            <Plus className="h-4 w-4" />
-            Nouvelle vente
-          </Button>
-        }
       />
 
       <PageFilters>
@@ -221,7 +284,7 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
                       {txn.client?.firstName} {txn.client?.lastName}
                     </p>
                     <p className="truncate text-[10px] text-muted-foreground">{txn.ticket?.event?.name}</p>
-                    <p className="mt-1 font-mono text-xs tabular-nums text-emerald-400">
+                    <p className="mt-1 font-mono text-xs tabular-nums text-emerald-600">
                       {formatCurrency(txn.negotiatedPrice, txn.currency)}
                     </p>
                   </div>
@@ -258,6 +321,46 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
                   {DELIVERY_STATUS_LABELS[txn.deliveryStatus]}
                 </Badge>
               </div>
+              {(txn.businessBringer || txn.seller) && (
+                <p className="text-[10px] text-muted-foreground">
+                  {txn.businessBringer &&
+                    `Apport. ${txn.businessBringer.firstName} ${txn.businessBringer.lastName}`}
+                  {txn.businessBringerCommissionRate != null &&
+                    ` (${txn.businessBringerCommissionRate}%)`}
+                  {txn.businessBringer && txn.seller && " · "}
+                  {txn.seller && `Vendeur ${txn.seller.firstName} ${txn.seller.lastName}`}
+                </p>
+              )}
+              <p className={txn.seatsPending && !txn.assignedSeats ? "text-xs text-amber-700" : "text-xs text-muted-foreground"}>
+                {salePlacementLabel(txn.ticket, txn)}
+              </p>
+              {txn.seatsPending && !txn.assignedSeats && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-full gap-1.5 text-xs"
+                  onClick={() =>
+                    openDialog("assignSeats", {
+                      transactionId: txn.id,
+                      assignMode: "sale",
+                    })
+                  }
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  Attribuer les places
+                </Button>
+              )}
+              {txn.invoice && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-full gap-1.5 text-xs"
+                  onClick={() => openDialog("invoice", { transactionId: txn.id })}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  {txn.invoice.number}
+                </Button>
+              )}
               <p className="text-[10px] text-muted-foreground">{formatDateTime(txn.saleDate)}</p>
             </CardContent>
           </Card>

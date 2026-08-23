@@ -56,7 +56,7 @@ export function AnalyticsDashboard({
         <Card className="border-border/60 bg-card/50">
           <CardContent className="p-4">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Marge Brute</p>
-            <p className="text-2xl font-bold tabular-nums text-emerald-400">{formatCurrency(totalMargin, "EUR")}</p>
+            <p className="text-2xl font-bold tabular-nums text-emerald-600">{formatCurrency(totalMargin, "EUR")}</p>
           </CardContent>
         </Card>
         <Card className="border-border/60 bg-card/50">
@@ -136,9 +136,9 @@ export function AnalyticsDashboard({
           <div className="h-[240px] sm:h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topEvents} layout="vertical" margin={{ top: 0, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-              <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <YAxis type="category" dataKey="name" width={72} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+              <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <YAxis type="category" dataKey="name" width={72} tick={{ fill: "var(--muted-foreground)", fontSize: 9 }} />
               <Tooltip
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;

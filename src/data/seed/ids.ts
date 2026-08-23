@@ -48,6 +48,7 @@ export const SEED_IDS = {
     taylorSwiftFloor: "klna_tkt_010",
     omVirageSud: "klna_tkt_011",
     coachellaGA: "klna_tkt_012",
+    badBunnyGoldBulk: "klna_tkt_013",
   },
   attachments: {
     psgPdf: "klna_att_001",
@@ -66,6 +67,22 @@ export const SEED_IDS = {
     badBunnySplitB: "klna_txn_006",
     hamiltonReserve: "klna_txn_007",
     f1DirectSale: "klna_txn_008",
+    badBunnyBulkSale: "klna_txn_009",
+  },
+  businessBringers: {
+    yannLeroy: "klna_brk_001",
+    julieMoreau: "klna_brk_002",
+    marcDubois: "klna_brk_003",
+    salmaBenali: "klna_brk_004",
+    pierreGarcia: "klna_brk_005",
+    leaFontaine: "klna_brk_006",
+  },
+  sellers: {
+    nadiaKhelifi: "klna_sll_001",
+    thomasLeroy: "klna_sll_002",
+    camilleRoux: "klna_sll_003",
+    antoineBernard: "klna_sll_004",
+    sarahDupont: "klna_sll_005",
   },
 } as const;
 

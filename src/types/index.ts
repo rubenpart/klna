@@ -28,6 +28,7 @@ export type PaymentMethod = "BANK_TRANSFER" | "CARD" | "CASH" | "CRYPTO";
 export type DeliveryStatus = "TO_DELIVER" | "DELIVERED" | "TRANSFER_COMPLETED";
 export type AttachmentType = "E_TICKET_PDF" | "TRANSFER_SCREENSHOT" | "QR_CODE" | "OTHER";
 export type MarginTier = "high" | "medium" | "loss";
+export type PartnerStatus = "ACTIVE" | "INACTIVE";
 
 // ─── Domain Models ───────────────────────────────────────────────────────────
 
@@ -79,6 +80,8 @@ export interface Ticket {
   category?: string;
   row?: string;
   seats?: string;
+  /** Billets achetés en gros — places numérotées à attribuer plus tard */
+  seatsPending?: boolean;
   ticketType: TicketType;
   quantity: number;
   purchaseUnitPrice: number;
@@ -88,6 +91,7 @@ export interface Ticket {
   stockStatus: TicketStockStatus;
   transferStatus: TransferStatus;
   targetSalePrice?: number;
+  minimumSalePrice?: number;
   actualSalePrice?: number;
   resaleFees: number;
   resalePlatform?: ResalePlatform;
@@ -110,14 +114,64 @@ export interface Client {
   creditBalance: number;
   creditCurrency: Currency;
   seatPreferences?: string;
+  notes?: string;
   totalSpent?: number;
   totalMarginGenerated?: number;
+}
+
+export interface BusinessBringer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  commissionRate: number;
+  status: PartnerStatus;
+  notes?: string;
+  referralCount?: number;
+  totalReferredRevenue?: number;
+  totalCommissionEarned?: number;
+}
+
+export interface Seller {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  role?: string;
+  status: PartnerStatus;
+  notes?: string;
+  salesCount?: number;
+  totalSalesRevenue?: number;
+}
+
+export interface Invoice {
+  number: string;
+  issueDate: string;
+  dueDate?: string;
+  billingName: string;
+  billingEmail?: string;
+  billingAddress?: string;
+  billingPostalCode?: string;
+  billingCity?: string;
+  billingCountry?: string;
+  description: string;
+  quantity: number;
+  unitPriceHT: number;
+  vatRate: number;
+  notes?: string;
+  paymentTerms?: string;
 }
 
 export interface Transaction {
   id: string;
   ticketId: string;
   clientId: string;
+  businessBringerId?: string;
+  businessBringerCommissionRate?: number;
+  sellerId?: string;
   saleDate: string;
   negotiatedPrice: number;
   currency: Currency;
@@ -125,9 +179,17 @@ export interface Transaction {
   paymentMethod?: PaymentMethod;
   deliveryStatus: DeliveryStatus;
   resalePlatform?: ResalePlatform;
+  soldQuantity: number;
+  /** Vente effectuée avant attribution des places */
+  seatsPending?: boolean;
+  assignedRow?: string;
+  assignedSeats?: string;
+  invoice?: Invoice;
   // Relations enrichies
   ticket?: Ticket;
   client?: Client;
+  businessBringer?: BusinessBringer;
+  seller?: Seller;
 }
 
 export interface MarginResult {
@@ -205,4 +267,9 @@ export const TICKET_TYPE_LABELS: Record<TicketType, string> = {
   MOBILE_TRANSFER: "Mobile Transfer",
   PHYSICAL: "Physique",
   QR_CODE: "QR Code",
+};
+
+export const PARTNER_STATUS_LABELS: Record<PartnerStatus, string> = {
+  ACTIVE: "Actif",
+  INACTIVE: "Inactif",
 };

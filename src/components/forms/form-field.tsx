@@ -14,10 +14,10 @@ export function FormField({ label, error, children, className, required }: FormF
     <div className={cn("space-y-1.5", className)}>
       <Label>
         {label}
-        {required && <span className="ml-0.5 text-red-400">*</span>}
+        {required && <span className="ml-0.5 text-red-600">*</span>}
       </Label>
       {children}
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }

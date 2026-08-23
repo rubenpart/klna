@@ -14,17 +14,17 @@ interface MarginIndicatorProps {
 const tierStyles: Record<MarginTier, { bg: string; text: string; dot: string }> = {
   high: {
     bg: "bg-emerald-500/10 border-emerald-500/30",
-    text: "text-emerald-400",
+    text: "text-emerald-700",
     dot: "bg-emerald-400",
   },
   medium: {
     bg: "bg-amber-500/10 border-amber-500/30",
-    text: "text-amber-400",
+    text: "text-amber-700",
     dot: "bg-amber-400",
   },
   loss: {
     bg: "bg-red-500/10 border-red-500/30",
-    text: "text-red-400",
+    text: "text-red-700",
     dot: "bg-red-400",
   },
 };

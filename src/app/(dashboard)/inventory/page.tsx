@@ -1,9 +1,5 @@
-"use client";
-
-import { InventoryTable } from "@/components/inventory/inventory-table";
-import { useCrmStore } from "@/stores/crm-store";
+import { redirect } from "next/navigation";
 
 export default function InventoryPage() {
-  const tickets = useCrmStore((s) => s.tickets);
-  return <InventoryTable tickets={tickets} />;
+  redirect("/events");
 }
