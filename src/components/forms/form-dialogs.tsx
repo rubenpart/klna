@@ -1,5 +1,6 @@
 "use client";
 
+import { UpdateSaleStatusDialog } from "./update-sale-status-dialog";
 import { AssignSeatsDialog } from "./assign-seats-dialog";
 import { BusinessBringerFormDialog } from "./business-bringer-form-dialog";
 import { ClientFormDialog } from "./client-form-dialog";
@@ -20,6 +21,7 @@ export function FormDialogs() {
       <TicketFormDialog />
       <SaleFormDialog />
       <AssignSeatsDialog />
+      <UpdateSaleStatusDialog />
       <InvoiceViewDialog />
       <EditInvoiceDialog />
     </>

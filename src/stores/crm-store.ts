@@ -27,6 +27,7 @@ import type {
   SaleFormValues,
   SellerFormValues,
   TicketFormValues,
+  UpdateSaleStatusFormValues,
 } from "@/lib/validations/crm";
 import { invoiceFormToInvoice, ticketDescription } from "@/lib/invoice";
 import {
@@ -42,6 +43,7 @@ export type FormDialogType =
   | "invoice"
   | "editInvoice"
   | "assignSeats"
+  | "updateSaleStatus"
   | "businessBringer"
   | "seller"
   | null;
@@ -90,6 +92,7 @@ interface CrmState {
   addSale: (data: SaleFormValues) => Transaction;
   assignTicketSeats: (ticketId: string, data: AssignSeatsFormValues) => void;
   assignSaleSeats: (transactionId: string, data: AssignSeatsFormValues) => void;
+  updateTransactionStatus: (transactionId: string, data: UpdateSaleStatusFormValues) => void;
   updateTransactionInvoice: (transactionId: string, data: InvoiceFormValues) => void;
   refreshComputed: () => void;
 }
@@ -370,6 +373,7 @@ export const useCrmStore = create<CrmState>((set, get) => ({
       resalePlatform: data.resalePlatform,
       soldQuantity,
       seatsPending: Boolean(ticket.seatsPending),
+      notes: data.notes || undefined,
       invoice: data.invoice.enabled ? invoiceFormToInvoice(data.invoice) : undefined,
     };
 
@@ -444,6 +448,24 @@ export const useCrmStore = create<CrmState>((set, get) => ({
         return updated;
       });
 
+      const next = rehydrateRelations({ ...s, transactions });
+      return { ...next, ...computeAll(next) };
+    });
+  },
+
+  updateTransactionStatus: (transactionId, data) => {
+    set((s) => {
+      const transactions = s.transactions.map((txn) =>
+        txn.id === transactionId
+          ? {
+              ...txn,
+              paymentStatus: data.paymentStatus,
+              paymentMethod: data.paymentMethod || undefined,
+              deliveryStatus: data.deliveryStatus,
+              notes: data.notes?.trim() || undefined,
+            }
+          : txn
+      );
       const next = rehydrateRelations({ ...s, transactions });
       return { ...next, ...computeAll(next) };
     });

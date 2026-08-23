@@ -91,7 +91,6 @@ enum PaymentMethod {
 enum DeliveryStatus {
   TO_DELIVER
   DELIVERED
-  TRANSFER_COMPLETED
 }
 
 enum AttachmentType {

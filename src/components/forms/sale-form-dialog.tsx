@@ -541,7 +541,6 @@ export function SaleFormDialog() {
                     <SelectContent>
                       <SelectItem value="TO_DELIVER">À livrer</SelectItem>
                       <SelectItem value="DELIVERED">Livré</SelectItem>
-                      <SelectItem value="TRANSFER_COMPLETED">Transfert effectué</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormField>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EventInventory } from "@/components/events/event-inventory";
+import { EventSoldTickets } from "@/components/events/event-sold-tickets";
 import { formatCurrency } from "@/lib/currency";
 import { formatDateTime } from "@/lib/utils";
 import { computeEventStockSummary } from "@/lib/ticket-stock";
@@ -148,6 +149,8 @@ export function EventDetail({ eventId }: EventDetailProps) {
       </div>
 
       <EventInventory event={event} tickets={tickets} />
+
+      <EventSoldTickets tickets={tickets} />
     </div>
   );
 }

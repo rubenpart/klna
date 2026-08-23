@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, FileText, MapPin, Package, Search, Send, Truck } from "lucide-react";
+import { ArrowUpDown, FileText, MapPin, Package, Search, Truck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,14 +54,12 @@ const paymentVariant: Record<string, "success" | "warning" | "secondary"> = {
 
 const deliveryVariant: Record<string, "critical" | "warning" | "success" | "secondary"> = {
   TO_DELIVER: "critical",
-  DELIVERED: "warning",
-  TRANSFER_COMPLETED: "success",
+  DELIVERED: "success",
 };
 
 const PIPELINE_COLUMNS = [
   { key: "TO_DELIVER" as const, label: "À livrer", icon: Package, color: "border-red-500/30 bg-red-500/5" },
-  { key: "DELIVERED" as const, label: "Livré", icon: Truck, color: "border-amber-500/30 bg-amber-500/5" },
-  { key: "TRANSFER_COMPLETED" as const, label: "Transfert OK", icon: Send, color: "border-emerald-500/30 bg-emerald-500/5" },
+  { key: "DELIVERED" as const, label: "Livré", icon: Truck, color: "border-emerald-500/30 bg-emerald-500/5" },
 ];
 
 export function SalesPipeline({ transactions }: SalesPipelineProps) {
@@ -262,7 +260,7 @@ export function SalesPipeline({ transactions }: SalesPipelineProps) {
         </Select>
       </PageFilters>
 
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {PIPELINE_COLUMNS.map((col) => {
           const items = transactions.filter((t) => t.deliveryStatus === col.key);
           const Icon = col.icon;

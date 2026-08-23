@@ -25,7 +25,7 @@ export type AcquisitionChannel =
 export type ClientType = "VIP" | "REGULAR" | "BROKER";
 export type PaymentStatus = "PAID" | "DEPOSIT" | "PENDING";
 export type PaymentMethod = "BANK_TRANSFER" | "CARD" | "CASH" | "CRYPTO";
-export type DeliveryStatus = "TO_DELIVER" | "DELIVERED" | "TRANSFER_COMPLETED";
+export type DeliveryStatus = "TO_DELIVER" | "DELIVERED";
 export type AttachmentType = "E_TICKET_PDF" | "TRANSFER_SCREENSHOT" | "QR_CODE" | "OTHER";
 export type MarginTier = "high" | "medium" | "loss";
 export type PartnerStatus = "ACTIVE" | "INACTIVE";
@@ -184,6 +184,7 @@ export interface Transaction {
   seatsPending?: boolean;
   assignedRow?: string;
   assignedSeats?: string;
+  notes?: string;
   invoice?: Invoice;
   // Relations enrichies
   ticket?: Ticket;
@@ -256,10 +257,16 @@ export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   PENDING: "En attente",
 };
 
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  BANK_TRANSFER: "Virement",
+  CARD: "Carte",
+  CASH: "Espèces",
+  CRYPTO: "Crypto",
+};
+
 export const DELIVERY_STATUS_LABELS: Record<DeliveryStatus, string> = {
   TO_DELIVER: "À livrer",
   DELIVERED: "Livré",
-  TRANSFER_COMPLETED: "Transfert effectué",
 };
 
 export const TICKET_TYPE_LABELS: Record<TicketType, string> = {

@@ -72,7 +72,7 @@ const TRANSFER_STATUSES = ["PENDING_RECEIPT", "IN_STOCK", "READY_TO_SEND", "SENT
 const PLATFORMS = ["WHATSAPP", "STUBHUB", "VIAGOGO", "DIRECT_CLIENT", "PRIVATE_SALE"] as const;
 const PAYMENT_STATUSES = ["PAID", "DEPOSIT", "PENDING"] as const;
 const PAYMENT_METHODS = ["BANK_TRANSFER", "CARD", "CASH", "CRYPTO"] as const;
-const DELIVERY_STATUSES = ["TO_DELIVER", "DELIVERED", "TRANSFER_COMPLETED"] as const;
+const DELIVERY_STATUSES = ["TO_DELIVER", "DELIVERED"] as const;
 const TICKET_TYPES = ["E_TICKET_PDF", "MOBILE_TRANSFER", "PHYSICAL", "QR_CODE"] as const;
 const CURRENCIES = ["EUR", "USD", "AED"] as const;
 
@@ -277,7 +277,7 @@ export function generateBulkSeed(
       soldQuantity: 2,
       paymentStatus: "PAID",
       paymentMethod: "BANK_TRANSFER",
-      deliveryStatus: "TRANSFER_COMPLETED",
+      deliveryStatus: "DELIVERED",
       resalePlatform: "WHATSAPP",
       notes: "Coldplay Lyon — très satisfait",
       createdAt,

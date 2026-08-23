@@ -184,6 +184,7 @@ export function hydrateSeedData(): HydratedDatabase {
     seatsPending: seed.seatsPending ?? false,
     assignedRow: seed.assignedRow ?? undefined,
     assignedSeats: seed.assignedSeats ?? undefined,
+    notes: seed.notes ?? undefined,
     invoice: seed.invoice ?? undefined,
     ticket: ticketMap.get(seed.ticketId),
     client: clientMap.get(seed.clientId),
@@ -309,7 +310,7 @@ export function getUrgentDeliveries(
   const eventMap = new Map(events.map((e) => [e.id, e]));
 
   for (const txn of transactions) {
-    if (txn.deliveryStatus === "TRANSFER_COMPLETED") continue;
+    if (txn.deliveryStatus === "DELIVERED") continue;
     const ticket = ticketMap.get(txn.ticketId);
     const event = ticket ? eventMap.get(ticket.eventId) : undefined;
     if (!ticket || !event) continue;

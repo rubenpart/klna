@@ -98,6 +98,15 @@ export const invoiceFormSchema = z.object({
 
 export type InvoiceFormValues = z.infer<typeof invoiceFormSchema>;
 
+export const updateSaleStatusFormSchema = z.object({
+  paymentStatus: z.enum(["PAID", "DEPOSIT", "PENDING"]),
+  paymentMethod: z.enum(["BANK_TRANSFER", "CARD", "CASH", "CRYPTO"]).optional(),
+  deliveryStatus: z.enum(["TO_DELIVER", "DELIVERED"]),
+  notes: z.string().optional(),
+});
+
+export type UpdateSaleStatusFormValues = z.infer<typeof updateSaleStatusFormSchema>;
+
 export const saleFormSchema = z
   .object({
     ticketId: z.string().min(1, "Billet requis"),
@@ -106,7 +115,7 @@ export const saleFormSchema = z
     currency: z.enum(["EUR", "USD", "AED"]),
     paymentStatus: z.enum(["PAID", "DEPOSIT", "PENDING"]),
     paymentMethod: z.enum(["BANK_TRANSFER", "CARD", "CASH", "CRYPTO"]).optional(),
-    deliveryStatus: z.enum(["TO_DELIVER", "DELIVERED", "TRANSFER_COMPLETED"]),
+    deliveryStatus: z.enum(["TO_DELIVER", "DELIVERED"]),
     resalePlatform: z.enum(["STUBHUB", "VIAGOGO", "DIRECT_CLIENT", "WHATSAPP", "PRIVATE_SALE"]),
     soldQuantity: z.coerce.number().int().min(1, "Min. 1 billet"),
     businessBringerId: z.string().optional(),
