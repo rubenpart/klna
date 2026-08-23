@@ -84,6 +84,15 @@ export function computeInvoiceTotals(invoice: Pick<Invoice, "quantity" | "unitPr
   return { totalHT, vatAmount, totalTTC };
 }
 
+export function unitPriceTTCFromHT(unitPriceHT: number, vatRate: number): number {
+  return Math.round(unitPriceHT * (1 + vatRate / 100) * 100) / 100;
+}
+
+export function unitPriceHTFromUnitTTC(unitPriceTTC: number, vatRate: number): number {
+  if (vatRate <= 0) return unitPriceTTC;
+  return Math.round((unitPriceTTC / (1 + vatRate / 100)) * 100) / 100;
+}
+
 export function unitPriceHTFromTTC(totalTTC: number, quantity: number, vatRate: number): number {
   if (quantity <= 0) return 0;
   const totalHT = totalTTC / (1 + vatRate / 100);

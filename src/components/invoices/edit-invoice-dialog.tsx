@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FormActions, FormField, FormRow } from "@/components/forms/form-field";
 import { InvoicePreview } from "@/components/invoices/invoice-preview";
+import { InvoiceUnitPriceTtcField } from "@/components/invoices/invoice-unit-price-ttc-field";
 import type { Invoice } from "@/types";
 import { invoiceFormSchema, type InvoiceFormValues } from "@/lib/validations/crm";
 import { useCrmStore } from "@/stores/crm-store";
@@ -76,6 +77,7 @@ export function EditInvoiceDialog() {
   });
 
   const invoiceValues = form.watch();
+  const vatRate = Number(invoiceValues.vatRate) || 0;
 
   return (
     <Dialog open={activeDialog === "editInvoice"} onOpenChange={(o) => !o && closeDialog()}>
@@ -112,9 +114,12 @@ export function EditInvoiceDialog() {
                 <FormField label="Quantité" error={form.formState.errors.quantity?.message} required>
                   <Input type="number" min={1} {...form.register("quantity")} />
                 </FormField>
-                <FormField label="Prix unitaire HT" error={form.formState.errors.unitPriceHT?.message} required>
-                  <Input type="number" min={0} step={0.01} {...form.register("unitPriceHT")} />
-                </FormField>
+                <InvoiceUnitPriceTtcField
+                  unitPriceHT={Number(invoiceValues.unitPriceHT) || 0}
+                  vatRate={vatRate}
+                  error={form.formState.errors.unitPriceHT?.message}
+                  onUnitPriceHTChange={(value) => form.setValue("unitPriceHT", value)}
+                />
                 <FormField label="TVA %" error={form.formState.errors.vatRate?.message} required>
                   <Input type="number" min={0} max={100} {...form.register("vatRate")} />
                 </FormField>

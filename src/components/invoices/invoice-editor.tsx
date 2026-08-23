@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField, FormRow } from "@/components/forms/form-field";
 import { InvoicePreview } from "@/components/invoices/invoice-preview";
+import { InvoiceUnitPriceTtcField } from "@/components/invoices/invoice-unit-price-ttc-field";
 import type { SaleFormValues } from "@/lib/validations/crm";
 import { invoiceFormToInvoice } from "@/lib/invoice";
 import type { Currency } from "@/types";
@@ -20,6 +21,7 @@ export function InvoiceEditor({ form, currency, onRefresh }: InvoiceEditorProps)
   const invoiceEnabled = form.watch("invoice.enabled");
   const invoiceValues = form.watch("invoice");
   const invoiceErrors = form.formState.errors.invoice;
+  const vatRate = Number(invoiceValues.vatRate) || 0;
 
   if (!invoiceEnabled) {
     return (
@@ -84,9 +86,12 @@ export function InvoiceEditor({ form, currency, onRefresh }: InvoiceEditorProps)
           <FormField label="Quantité" error={invoiceErrors?.quantity?.message} required>
             <Input type="number" min={1} {...form.register("invoice.quantity")} />
           </FormField>
-          <FormField label="P.U. HT" error={invoiceErrors?.unitPriceHT?.message} required>
-            <Input type="number" min={0} step={0.01} {...form.register("invoice.unitPriceHT")} />
-          </FormField>
+          <InvoiceUnitPriceTtcField
+            unitPriceHT={Number(invoiceValues.unitPriceHT) || 0}
+            vatRate={vatRate}
+            error={invoiceErrors?.unitPriceHT?.message}
+            onUnitPriceHTChange={(value) => form.setValue("invoice.unitPriceHT", value)}
+          />
           <FormField label="TVA (%)" error={invoiceErrors?.vatRate?.message}>
             <Input type="number" min={0} max={100} step={0.1} {...form.register("invoice.vatRate")} />
           </FormField>

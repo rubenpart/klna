@@ -1,7 +1,7 @@
 "use client";
 
 import { formatCurrency } from "@/lib/currency";
-import { computeInvoiceTotals, KLNA_COMPANY } from "@/lib/invoice";
+import { computeInvoiceTotals, KLNA_COMPANY, unitPriceTTCFromHT } from "@/lib/invoice";
 import { formatDate } from "@/lib/utils";
 import type { Currency, Invoice } from "@/types";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,9 @@ interface InvoicePreviewProps {
 }
 
 export function InvoicePreview({ invoice, currency, className, id }: InvoicePreviewProps) {
-  const { totalHT, vatAmount, totalTTC } = computeInvoiceTotals(invoice);
+  const { vatAmount, totalTTC } = computeInvoiceTotals(invoice);
+  const unitPriceTTC = unitPriceTTCFromHT(invoice.unitPriceHT, invoice.vatRate);
+  const lineTotalTTC = unitPriceTTC * invoice.quantity;
 
   const billingLines = [
     invoice.billingAddress,
@@ -90,8 +92,8 @@ export function InvoicePreview({ invoice, currency, className, id }: InvoicePrev
             <tr>
               <th className="px-3 py-2 font-semibold">Description</th>
               <th className="px-3 py-2 text-right font-semibold">Qté</th>
-              <th className="px-3 py-2 text-right font-semibold">P.U. HT</th>
-              <th className="px-3 py-2 text-right font-semibold">Total HT</th>
+              <th className="px-3 py-2 text-right font-semibold">P.U. TTC</th>
+              <th className="px-3 py-2 text-right font-semibold">Total TTC</th>
             </tr>
           </thead>
           <tbody>
@@ -99,10 +101,10 @@ export function InvoicePreview({ invoice, currency, className, id }: InvoicePrev
               <td className="px-3 py-3 align-top">{invoice.description}</td>
               <td className="px-3 py-3 text-right tabular-nums">{invoice.quantity}</td>
               <td className="px-3 py-3 text-right tabular-nums">
-                {formatCurrency(invoice.unitPriceHT, currency)}
+                {formatCurrency(unitPriceTTC, currency)}
               </td>
               <td className="px-3 py-3 text-right tabular-nums font-medium">
-                {formatCurrency(totalHT, currency)}
+                {formatCurrency(lineTotalTTC, currency)}
               </td>
             </tr>
           </tbody>
@@ -111,18 +113,15 @@ export function InvoicePreview({ invoice, currency, className, id }: InvoicePrev
 
       <div className="mt-4 flex justify-end">
         <div className="w-full max-w-xs space-y-1.5 text-xs">
-          <div className="flex justify-between text-zinc-600">
-            <span>Total HT</span>
-            <span className="tabular-nums">{formatCurrency(totalHT, currency)}</span>
-          </div>
-          <div className="flex justify-between text-zinc-600">
-            <span>TVA ({invoice.vatRate}%)</span>
-            <span className="tabular-nums">{formatCurrency(vatAmount, currency)}</span>
-          </div>
           <div className="flex justify-between border-t border-zinc-200 pt-2 text-sm font-bold">
             <span>Total TTC</span>
             <span className="tabular-nums">{formatCurrency(totalTTC, currency)}</span>
           </div>
+          {invoice.vatRate > 0 && (
+            <p className="text-right text-[10px] text-zinc-500">
+              Dont TVA ({invoice.vatRate}%) : {formatCurrency(vatAmount, currency)}
+            </p>
+          )}
         </div>
       </div>
 
